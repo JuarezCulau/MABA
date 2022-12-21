@@ -1,6 +1,6 @@
 # How to Install MABA
 
-##MABA was created to run on windows
+MABA was created to run on windows
 
 # 1: Python is required
 To quickly have python running on your machine, download and install [Anaconda](https://www.anaconda.com/products/distribution).
