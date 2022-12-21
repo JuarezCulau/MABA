@@ -5,8 +5,8 @@ MABA (Mice Automatic Behavior Analysis), is currently in beta version and is a b
 
 This is a biomedical student project and is currently maintained only by me, so any contributions will help, and if you have any requests or have reported a bug, please be patient!
 
-#How to install MABA? 
+# How to install MABA? 
 We have a quick guide for the installation [here](https://github.com/JuarezCulau/MABA/blob/main/Docs/Installation.md).
 
-#Documentation
+# Documentation
 MABA was created with a graphical interface with minimum input from user, but if there is any doubt, please check our guides for [how to use](https://github.com/JuarezCulau/MABA/tree/main/Docs/Guides) MABA
