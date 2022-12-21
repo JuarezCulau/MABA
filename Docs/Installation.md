@@ -3,7 +3,7 @@
 ##MABA was created to run on windows
 
 # 1: Python is required
-To quickly have python running on your machine, download and install [Anaconda] (https://www.anaconda.com/products/distribution).
+To quickly have python running on your machine, download and install [Anaconda](https://www.anaconda.com/products/distribution).
 
 # 2: If you wish to use a GPU (Recommended), you need to also have CUDA and cuDNN installed.
 Please note that CUDA systems only with NVIDIA GPUs, please check the support for your GPU.
