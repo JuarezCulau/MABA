@@ -54,6 +54,9 @@ tail3y = []
 tail4x = []
 tail4y = []
 
+#Array of the tracked points
+TrackedPoints = [Nosex, Nosey, Headx, Heady, L_Earx, L_Eary, R_Earx, R_Eary, Body1x, Body1y, CenterBodyx, CenterBodyy, Body2x, Body2y, tail1x, tail1y, tail2x, tail2y, tail3x, tail3y, tail4x, tail4y]
+
 global Zone1R, Zone2R, Zone3R,Zone4R,Zone5R,Zone6R,Zone7R,Zone8R,Zone9R,Zone10R,Zone11R,Zone12R
 
 #Zones Time
@@ -145,10 +148,54 @@ CropRon = False
 CreateLocomotionGraph = False
 DualZone = False
 Interaction = False
+SingleVideo = False
+
+def resetvalues():
+    r = 0
+
+    Interaction_FirstObjectR = 0
+    Interaction_SecondObjectR = 0
+
+    FirstObjectR = 0
+    SecondObjectR = 0
+
+    DZR = 0
+
+    Zone1R = 0
+    Zone2R = 0
+    Zone3R = 0
+    Zone3R = 0
+    Zone4R = 0
+    Zone5R = 0
+    Zone6R = 0
+    Zone7R = 0
+    Zone8R = 0
+    Zone9R = 0
+    Zone10R = 0
+    Zone11R = 0
+    Zone12R = 0
+
+    Zone1E = 0
+    Zone2E = 0
+    Zone3E = 0
+    Zone3E = 0
+    Zone4E = 0
+    Zone5E = 0
+    Zone6E = 0
+    Zone7E = 0
+    Zone8E = 0
+    Zone9E = 0
+    Zone10E = 0
+    Zone11E = 0
+    Zone12E = 0
 
 #First the remaining variables will be set, using the acquired values by user input
 def setglobalvariables(values):
-    global modelpath, videopath, projectfolder, sample, cap, framerate, w, h, resolution, image_nl, img
+    global modelpath, videopath, projectfolder, sample, cap, framerate, w, h, resolution, image_nl, img, videopath, video_name
+
+
+
+
     modelpath = values['-ModelPB-']
     videopath = values['-VideoFile-']
     projectfolder = values['-Folder-']
@@ -161,7 +208,7 @@ def setglobalvariables(values):
     ret, image_nl = cap.read()
     img = np.zeros((h, w, 3), dtype=np.uint8)
     img.fill(255)
-
+    video_name = values['-VideoFile-']
     print('Variables set!')
 
     Model.loadModel()

@@ -45,8 +45,9 @@ def CropForLocomotionGraph():
     ER_QY1 = (ExperimentROI[1])
     ER_QY2 = ER_Y2
 
-    if Config.Interaction:
-        NOR.SpecificObjectSelection()
+    if Config.SingleVideo:
+        if Config.Interaction:
+            NOR.SpecificObjectSelection()
 
-    print('locomotion extract frames call')
-    Frames.extractframes()
+        print('locomotion extract frames call')
+        Frames.extractframes()

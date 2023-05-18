@@ -20,6 +20,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 """
+import os
 
 import PySimpleGUI as sg
 import tensorflow as tf
@@ -36,8 +37,8 @@ def main():
     global TrackZones, NovelObject, CropRon, CreateLocomotionGraph, DualZone, Interaction
     layout = [[sg.Text('Select the Model PB')],
               [sg.InputText(size=(50, 1), key='-ModelPB-'), sg.FileBrowse()],
-              [sg.Text('Select the Video For Analysis')],
-              [sg.InputText(size=(50, 1), key='-VideoFile-'), sg.FileBrowse()],
+              [sg.Text('Select the Video or Folder for Analysis')],
+              [sg.InputText(size=(50, 1), key='-VideoFile-'), sg.FileBrowse(file_types=(("Video Files", "*.mp4;*.avi"),), target='-VideoFile-', enable_events=True), sg.FolderBrowse(target='-VideoFile-', enable_events=True)],
               [sg.Text('Analysis Folder')],
               [sg.InputText(size=(50, 1), key='-Folder-'), sg.FolderBrowse()],
               [sg.Text('Name Your Sample')],
@@ -87,6 +88,16 @@ def main():
         #print(window['-TOGGLE-GRAPHIC-'].metadata)
         if event in (sg.WIN_CLOSED, 'Exit'):
             break
+
+        #Check if it's only one video or folder
+        selected_path = values['-VideoFile-']
+        if selected_path:
+            if os.path.isfile(selected_path):
+                Config.SingleVideo = True
+            elif os.path.isdir(selected_path):
+                # Analyze all video files in the selected folder
+                Config.SingleVideo = False
+
         #First button logic
         elif event == '-TrackZones?-':  # if the graphical button that changes images
             window['-TrackZones?-'].metadata = not window['-TrackZones?-'].metadata

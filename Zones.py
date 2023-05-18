@@ -271,15 +271,16 @@ def SelectZones():
                                                     Z12_QY1 = ((Zone[11])[1])
                                                     Z12_QY2 = Z12_Y2
 
-    if Config.NovelObject:
-        NOR.ObjectSelection()
+    if Config.SingleVideo:
+        if Config.NovelObject:
+            NOR.ObjectSelection()
 
-    if Config.DualZone:
-        SelectDualZone()
+        if Config.DualZone:
+            SelectDualZone()
 
-    if not Config.NovelObject and not Config.DualZone:
-        print('zone extract frames call')
-        Frames.extractframes()
+        if not Config.NovelObject and not Config.DualZone:
+            print('zone extract frames call')
+            Frames.extractframes()
 
 
 #As you can see, the logic here is not that much different, this time is selecting only one ROI.
@@ -300,13 +301,14 @@ def SelectDualZone():
     DZROI_QY1 = (dualzoneROI[1])
     DZROI_QY2 = DZROI_Y2
 
-    if Config.NovelObject:
-        NOR.ObjectSelection()
+    if Config.SingleVideo:
+        if Config.NovelObject:
+            NOR.ObjectSelection()
 
-    if Config.CreateLocomotionGraph:
-        Locomotion.CropForLocomotionGraph()
+        if Config.CreateLocomotionGraph:
+            Locomotion.CropForLocomotionGraph()
 
 
-    if not Config.NovelObject and not Config.CreateLocomotionGraph:
-        print('dual zone extract frames call')
-        Frames.extractframes()
+        if not Config.NovelObject and not Config.CreateLocomotionGraph:
+            print('dual zone extract frames call')
+            Frames.extractframes()

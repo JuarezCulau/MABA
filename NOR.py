@@ -30,7 +30,7 @@ import Locomotion
 # the specific object selection determine interaction but for that, the model must have precision enough to track the nose of the mice in your video
 #I choose the same logic from the trackzones, this time for only two objects, if for some reason there is more objects in your experiment, then expand here!
 def ObjectSelection():
-    RON = cv2.selectROIs("select the area around the objects", Config.image_nl, False)
+    RON = cv2.selectROIs("select the area around the objects, press 'Enter' after selecting the first one, 'Esc' After selecting the second", Config.image_nl, False)
     global R1_X2, R1_Y2, R1_1, R1_2, R1_3, R1_4, R1_QX1, R1_QX2, R1_QY1, R1_QY2
     global R2_X2, R2_Y2, R2_1, R2_2, R2_3, R2_4, R2_QX1, R2_QX2, R2_QY1, R2_QY2
     #First Object
@@ -76,15 +76,16 @@ def ObjectSelection():
     R2_QY1 = ((RON[1])[1])
     R2_QY2 = R2_Y2
 
-    if Config.CreateLocomotionGraph:
-        Locomotion.CropForLocomotionGraph()
+    if Config.SingleVideo:
+        if Config.CreateLocomotionGraph:
+            Locomotion.CropForLocomotionGraph()
 
-    if Config.Interaction:
-        SpecificObjectSelection()
+        if Config.Interaction:
+            SpecificObjectSelection()
 
-    if not Config.CreateLocomotionGraph and not Config.Interaction:
-        print('object selection extract frames call')
-        Frames.extractframes()
+        if not Config.CreateLocomotionGraph and not Config.Interaction:
+            print('object selection extract frames call')
+            Frames.extractframes()
 
 #this function will be used to track the close proximity to the object
 #is important to remember that this functio will only work properly if the model has accuracy enough to track the nose of your mice
@@ -127,5 +128,5 @@ def SpecificObjectSelection():
     OBJ2_QY1 = ((OBJ[1])[1])
     OBJ2_QY2 = OBJ2_Y2
 
-    print('specific obj extract frames')
-    Frames.extractframes()
+    if Config.SingleVideo:
+        Frames.extractframes()

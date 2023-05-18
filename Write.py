@@ -20,24 +20,29 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 """
-
+import os
 import Config
 import Locomotion
 import Zones
 import cv2
 import Analysis
 
-def writeFile():
 
-    #Write results into txt file
-    file_name = str(Config.projectfolder) + '/' + "Results_" + str(Config.sample) + ".txt"
+# Write results into txt file
+def writeFile():
+    #Take only the video name from the entire path. If it's multiple videos, this variable has already been updated, so it's not going to change here
+    if os.path.isabs(Config.video_name):
+        Config.video_name = os.path.basename(Config.video_name)
+
+    file_name = str(Config.projectfolder) + '/' + 'Results_' + str(Config.sample) + '_' + str(Config.video_name) + '.txt'
     file = open(file_name, 'w')
 
 
     if Config.CreateLocomotionGraph:
         Cutimg = Config.img[Locomotion.ER_QY1: Locomotion.ER_QY2, Locomotion.ER_QX1: Locomotion.ER_QX2]
 
-        cv2.imwrite(str(Config.projectfolder) + '/Locomotion_' + str(Config.sample) + '.jpg', Cutimg)
+        cv2.imwrite(str(Config.projectfolder) + '/Locomotion_' + str(Config.sample) + '_' + str(Config.video_name) + '.jpg', Cutimg)
+        #cv2.imwrite(str(Config.projectfolder) + '/Locomotion_' + str(Config.sample) + '_' + str(Config.video_name) + '.jpg', Config.img)
         print('Locomotion Graph Created!')
 
 #This entire part can be rebuilt with a loop. However, I tested using this method and the loop,
