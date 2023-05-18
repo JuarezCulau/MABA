@@ -31,6 +31,32 @@ import NOR
 import Locomotion
 import Write
 
+def ClearArrays():
+    Config.RawImages.clear()
+
+    Config.Nosex.clear()
+    Config.Nosey.clear()
+    Config.Headx.clear()
+    Config.Heady.clear()
+    Config.L_Earx.clear()
+    Config.L_Eary.clear()
+    Config.R_Earx.clear()
+    Config.R_Eary.clear()
+    Config.Body1x.clear()
+    Config.Body1y.clear()
+    Config.CenterBodyx.clear()
+    Config.CenterBodyy.clear()
+    Config.Body2x.clear()
+    Config.Body2y.clear()
+    Config.tail1x.clear()
+    Config.tail1y.clear()
+    Config.tail2x.clear()
+    Config.tail2y.clear()
+    Config.tail3x.clear()
+    Config.tail3y.clear()
+    Config.tail4x.clear()
+    Config.tail4y.clear()
+
 
 #This is where magic happens, every value acquired so far is compiled here for the analysis
 def RunSess(NoMoreFrames, codec, out):
@@ -89,29 +115,29 @@ def RunSess(NoMoreFrames, codec, out):
             Config.tail4x.append((trackerSess[10])[1])
             Config.tail4y.append((trackerSess[10])[0])
 
-#Multiple arrays for each body part will story the coordinates from each frame. A easy way to run multiple analysis if you need it.
-            FrameNosex = int(Config.Nosex[0 + r2])
-            FrameNosey = int(Config.Nosey[0 + r2])
-            FrameHeadx = int(Config.Headx[0 + r2])
-            FrameHeady = int(Config.Heady[0 + r2])
-            FrameL_Earx = int(Config.L_Earx[0 + r2])
-            FrameL_Eary = int(Config.L_Eary[0 + r2])
-            FrameR_Earx = int(Config.R_Earx[0 + r2])
-            FrameR_Eary = int(Config.R_Eary[0 + r2])
-            FrameBody1x = int(Config.Body1x[0 + r2])
-            FrameBody1y = int(Config.Body1y[0 + r2])
-            FrameCenterBodyx = int(Config.CenterBodyx[0 + r2])
-            FrameCenterBodyy = int(Config.CenterBodyy[0 + r2])
-            FrameBody2x = int(Config.Body2x[0 + r2])
-            FrameBody2y = int(Config.Body2y[0 + r2])
-            Frametail1x = int(Config.tail1x[0 + r2])
-            Frametail1y = int(Config.tail1y[0 + r2])
-            Frametail2x = int(Config.tail2x[0 + r2])
-            Frametail2y = int(Config.tail2y[0 + r2])
-            Frametail3x = int(Config.tail3x[0 + r2])
-            Frametail3y = int(Config.tail3y[0 + r2])
-            Frametail4x = int(Config.tail4x[0 + r2])
-            Frametail4y = int(Config.tail4y[0 + r2])
+#Multiple arrays for each body part are going story the coordinates from each frame. A easy way to run multiple analysis if you need it.
+            FrameNosex = int(Config.Nosex[r2])
+            FrameNosey = int(Config.Nosey[r2])
+            FrameHeadx = int(Config.Headx[r2])
+            FrameHeady = int(Config.Heady[r2])
+            FrameL_Earx = int(Config.L_Earx[r2])
+            FrameL_Eary = int(Config.L_Eary[r2])
+            FrameR_Earx = int(Config.R_Earx[r2])
+            FrameR_Eary = int(Config.R_Eary[r2])
+            FrameBody1x = int(Config.Body1x[r2])
+            FrameBody1y = int(Config.Body1y[r2])
+            FrameCenterBodyx = int(Config.CenterBodyx[r2])
+            FrameCenterBodyy = int(Config.CenterBodyy[r2])
+            FrameBody2x = int(Config.Body2x[r2])
+            FrameBody2y = int(Config.Body2y[r2])
+            Frametail1x = int(Config.tail1x[r2])
+            Frametail1y = int(Config.tail1y[r2])
+            Frametail2x = int(Config.tail2x[r2])
+            Frametail2y = int(Config.tail2y[r2])
+            Frametail3x = int(Config.tail3x[r2])
+            Frametail3y = int(Config.tail3y[r2])
+            Frametail4x = int(Config.tail4x[r2])
+            Frametail4y = int(Config.tail4y[r2])
 
 
 
@@ -315,7 +341,7 @@ def RunSess(NoMoreFrames, codec, out):
                                     if Zones.nZones >= 7:
                                         if (Zones.Z7_QX1 <= FrameCenterBodyx <= Zones.Z7_QX2) and (Zones.Z7_QY1 <= FrameCenterBodyy <= Zones.Z7_QY2):
                                             cv2.putText(image, 'Mice in Zone 7!!!', (50, 200), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
-                                            Zone7R = Zone7R + 1
+                                            Config.Zone7R = Config.Zone7R + 1
 
                                             if not Config.InsideZone7:
                                                 Config.Zone7E = Config.Zone7E + 1
@@ -449,7 +475,6 @@ def RunSess(NoMoreFrames, codec, out):
                     cv2.putText(image, 'Close to object 1!!!', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
                     Config.FirstObjectR = Config.FirstObjectR + 1
 
-
                 if (NOR.R2_QX1 <= FrameCenterBodyx <= NOR.R2_QX2) and (NOR.R2_QY1 <= FrameCenterBodyy <= NOR.R2_QY2):
                     cv2.putText(image, 'Close to object 2!!!', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
                     Config.SecondObjectR = Config.SecondObjectR + 1
@@ -468,7 +493,7 @@ def RunSess(NoMoreFrames, codec, out):
                     if (NOR.OBJ1_QX1 <= FrameNosex <= NOR.OBJ1_QX2) and (NOR.OBJ1_QY1 <= FrameNosey <= NOR.OBJ1_QY2):
                         cv2.putText(image, 'Interacting with object 1!!!', (50, 250), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
-                        #this one is for the time of interaction with each object
+                        #Time of interaction with each object
                         Config.Interaction_FirstObjectR = Config.Interaction_FirstObjectR + 1
 
                         #now this one is for the number of interactions with each object
@@ -499,12 +524,12 @@ def RunSess(NoMoreFrames, codec, out):
 
         #if there is no more frames, then it will clear the RawImages one last time and call the next function "WriteFile"
         if NoMoreFrames:
-            Config.RawImages.clear()
+            ClearArrays()
             out.release
             print('Video Created')
             Write.writeFile()
 
         #If there is more frames, then it will clear the RawImages and go back into the extractframes loop until there is no more frames.
         else:
-            Config.RawImages.clear()
+            ClearArrays()
             print('clearing array extract frames call')

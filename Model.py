@@ -28,6 +28,7 @@ import Frames
 import Zones
 import NOR
 import Locomotion
+import MultiSelection
 
 
 #Load frozen tensorflow model selected by user
@@ -52,18 +53,23 @@ def loadModel():
 
     #Most of the next functions are optional, selected by the user before pressing "Run"
     #For that reason, the order will vary according to what the user selected.
-    if Config.TrackZones:
-        Zones.SelectZones()
+    if Config.SingleVideo:
+        if Config.TrackZones:
+            Zones.SelectZones()
 
-    if Config.DualZone:
-        Zones.SelectDualZone()
+        if Config.DualZone:
+            Zones.SelectDualZone()
 
-    if Config.NovelObject:
-        NOR.ObjectSelection()
+        if Config.NovelObject:
+            NOR.ObjectSelection()
 
-    if Config.CreateLocomotionGraph:
-        Locomotion.CropForLocomotionGraph()
+        if Config.CreateLocomotionGraph:
+            Locomotion.CropForLocomotionGraph()
 
-    if not Config.TrackZones and not Config.NovelObject and not Config.DualZone and not Config.CreateLocomotionGraph:
-        print('load model extract frames call')
-        Frames.extractframes()
+        if not Config.TrackZones and not Config.NovelObject and not Config.DualZone and not Config.CreateLocomotionGraph:
+            print('load model extract frames call')
+            Frames.extractframes()
+
+    else:
+        #MultiSelection()
+        MultiSelection.MultiExtraction()
