@@ -149,6 +149,7 @@ CreateLocomotionGraph = False
 DualZone = False
 Interaction = False
 SingleVideo = False
+Freeze = True
 
 def resetvalues():
     r = 0

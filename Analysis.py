@@ -30,6 +30,7 @@ import Zones
 import NOR
 import Locomotion
 import Write
+import Freezing
 
 def ClearArrays():
     Config.RawImages.clear()
@@ -514,6 +515,44 @@ def RunSess(NoMoreFrames, codec, out):
 
                     if not (NOR.OBJ2_QX1 <= FrameNosex <= NOR.OBJ2_QX2) and (NOR.OBJ2_QY1 <= FrameNosey <= NOR.OBJ2_QY2):
                         Config.I_OBJ_2 = False
+
+            FrameNosex = int(Config.Nosex[r2])
+            FrameNosey = int(Config.Nosey[r2])
+            FrameHeadx = int(Config.Headx[r2])
+            FrameHeady = int(Config.Heady[r2])
+            FrameL_Earx = int(Config.L_Earx[r2])
+            FrameL_Eary = int(Config.L_Eary[r2])
+            FrameR_Earx = int(Config.R_Earx[r2])
+            FrameR_Eary = int(Config.R_Eary[r2])
+            FrameBody1x = int(Config.Body1x[r2])
+            FrameBody1y = int(Config.Body1y[r2])
+            FrameCenterBodyx = int(Config.CenterBodyx[r2])
+            FrameCenterBodyy = int(Config.CenterBodyy[r2])
+            FrameBody2x = int(Config.Body2x[r2])
+            FrameBody2y = int(Config.Body2y[r2])
+            Frametail1x = int(Config.tail1x[r2])
+            Frametail1y = int(Config.tail1y[r2])
+            Frametail2x = int(Config.tail2x[r2])
+            Frametail2y = int(Config.tail2y[r2])
+            Frametail3x = int(Config.tail3x[r2])
+            Frametail3y = int(Config.tail3y[r2])
+            Frametail4x = int(Config.tail4x[r2])
+            Frametail4y = int(Config.tail4y[r2])
+
+            if Config.Freeze:
+                threshold_frames = 10
+                threshold_distance = 2
+
+                #First check the head for freezing
+                ComparisonCoordinates = [(int(Config.Headx[r2]), int(Config.Heady[r2])), (int(Config.Headx[r2 - 1]), int(Config.Heady[r2 - 1]))]
+                if threshold_frames < Freezing.calculate_freezing_time2(ComparisonCoordinates, threshold_distance):
+                    cv2.putText(image, 'Freezing', (50, 280), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+
+                #Second, check the centerbody for freezing
+                ComparisonCoordinates = [(int(Config.CenterBodyx[r2]), int(Config.CenterBodyy[r2])), (int(Config.CenterBodyx[r2 - 1]), int(Config.CenterBodyy[r2 - 1]))]
+                if threshold_frames < Freezing.calculate_freezing_time2(ComparisonCoordinates, threshold_distance):
+                    cv2.putText(image, 'Freezing', (50, 280), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+
 
             #if CropRon was not selected, then it will write the video at each loop
             if not Config.CropRon:
