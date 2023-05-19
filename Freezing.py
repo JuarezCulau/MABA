@@ -23,9 +23,10 @@ under the License.
 
 import numpy as np
 
-global freezing_frames
+import Config
 
 
+freezing_time = 0.0
 
 # def calculate_freezing_time(coordinates, threshold_distance, frame_duration):
 #     freezing_frames = 0
@@ -51,19 +52,17 @@ def calculate_distance(coord1, coord2):
     # Calculate Euclidean distance between two coordinates
     return np.sqrt((coord2[0] - coord1[0])**2 + (coord2[1] - coord1[1])**2)
 
-def calculate_freezing_time2(coordinates, threshold_distance):
-    freezing_frames = 0
-    freezing_time = 0.0
+def calculate_freezing_time(coordinates, threshold_distance):
 
     distance = calculate_distance(coordinates[0], coordinates[1])
 
     if distance <= threshold_distance:
-        freezing_frames += 1
+        Config.freezing_frames = Config.freezing_frames + 1
     else:
         # If the mouse starts moving, reset the freezing_frames counter
-        freezing_frames = 0
+        Config.freezing_frames = 0
 
-    return freezing_frames
+    return Config.freezing_frames
 
 
 # Example Usage

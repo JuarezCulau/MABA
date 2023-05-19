@@ -190,6 +190,10 @@ def resetvalues():
     Zone11E = 0
     Zone12E = 0
 
+global freezing_frames
+freezing_frames = 0
+
+
 #First the remaining variables will be set, using the acquired values by user input
 def setglobalvariables(values):
     global modelpath, videopath, projectfolder, sample, cap, framerate, w, h, resolution, image_nl, img, videopath, video_name
