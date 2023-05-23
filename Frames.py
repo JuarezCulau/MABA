@@ -26,6 +26,7 @@ import Config
 import GUI
 from sys import getsizeof
 import Analysis
+import CropImage
 
 #The analysis is made in cycles.
 #Usually tensorflow is loaded for each frame, as a unique session. I am not using that way because it takes too long to load a new session each time for each frame
@@ -183,14 +184,28 @@ def extractframes():
 
                 break
 
-            if (getsizeof(Config.RawImages) <= 20000):
-                print('appending')
-                Config.RawImages.append(image_np)
+            if Config.CropImage:
+                # Crop the frame using the ROI coordinates and append the cropped frame to the list of cropped frames
+                roi_frame = image_np[CropImage.y_start:CropImage.y_end, CropImage.x_start:CropImage.x_end]
+                if (getsizeof(Config.RawImages) <= 20000):
+                    print('appending')
+                    Config.RawImages.append(roi_frame)
+
+                else:
+                    #LastFrame = (cap.get(1))
+                    Config.NoMoreFrames = False
+                    Analysis.RunSess(Config.NoMoreFrames, codec, out)
 
             else:
-                #LastFrame = (cap.get(1))
-                Config.NoMoreFrames = False
-                Analysis.RunSess(Config.NoMoreFrames, codec, out)
+                if (getsizeof(Config.RawImages) <= 20000):
+                    print('appending')
+                    Config.RawImages.append(image_np)
+
+                else:
+                    # LastFrame = (cap.get(1))
+                    Config.NoMoreFrames = False
+                    Analysis.RunSess(Config.NoMoreFrames, codec, out)
+
 
         #Once there is no more frames, RunSess again with the remaining frames and and set "NoMoreFrames" to True
         Config.NoMoreFrames = True

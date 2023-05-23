@@ -30,7 +30,7 @@ import Frames
 #First it takes the resolution from the video to create a white img and here the aparatus is selected for image cut at the end.
 def CropForLocomotionGraph():
     global ER_QX1, ER_QX2, ER_QY1, ER_QY2
-    ExperimentROI = cv2.selectROI("Select the Entire Are of Your Experiment 'Enter'", Config.image_nl, False)
+    ExperimentROI = cv2.selectROI("(Crop Image for Locomotion Graph) Select the Entire Are of Your Experiment 'Enter'", Config.image_nl, False)
     ER_X2 = (ExperimentROI[0]) + (ExperimentROI[2])
     ER_Y2 = (ExperimentROI[1]) + (ExperimentROI[3])
 

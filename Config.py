@@ -150,6 +150,7 @@ DualZone = False
 Interaction = False
 SingleVideo = False
 Freeze = True
+CropImage = True
 
 def resetvalues():
     r = 0
@@ -190,8 +191,15 @@ def resetvalues():
     Zone11E = 0
     Zone12E = 0
 
-global freezing_frames
+#Crop Image Variables
+
+
+#Freezing Variables
+global freezing_frames, N_Freezing, freezing_frames_total, FreezeState
 freezing_frames = 0
+N_Freezing = 0
+freezing_frames_total = 0
+FreezeState = False
 
 
 #First the remaining variables will be set, using the acquired values by user input

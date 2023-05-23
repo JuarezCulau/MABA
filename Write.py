@@ -189,5 +189,13 @@ def writeFile():
             file.write('\n')
             file.write('Number of Interactions with Second Object: ' + str(Config.N_OBJ_2) + ' time')
 
+    if Config.Freeze:
+        TimeinFreezeState = Config.freezing_frames_total / Config.framerate
+        file.write('--- Freezing State Detection ---')
+        file.write('\n')
+        file.write('Number of Freezing: ' + str(Config.N_Freezing))
+        file.write('\n')
+        file.write('Time in Freeze State: ' + str(TimeinFreezeState) + ' seconds')
+
     print("File created :", file.name)
     file.close

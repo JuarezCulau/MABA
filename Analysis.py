@@ -90,8 +90,7 @@ def RunSess(NoMoreFrames, codec, out):
             Tail4_T = (trackerSess[10])[2]
 
             #this will be the Threshold value, between 0 and 1.
-            Threshold = 0.8
-            #Threshold = 0.99
+            Threshold = 0.98
 
             #here we extract the X and Y coordinate from each tracked point. The threshold have no function in this part.
             Config.Nosex.append((trackerSess[0])[1])
@@ -522,18 +521,38 @@ def RunSess(NoMoreFrames, codec, out):
             #Example: there is 60 frames per second, but since there is two body parts being counted, each one of them is going to add one frame
             #So in this case, even though half a second would be 30 frames, for 2 body parts, it should be 60 frames for half a second
             if Config.Freeze:
-                threshold_frames = 60
+                threshold_frames = 30
                 threshold_distance = 3
 
-                #First check the head for freezing
-                ComparisonCoordinates = [(int(Config.Headx[r2]), int(Config.Heady[r2])), (int(Config.Headx[r2 - 1]), int(Config.Heady[r2 - 1]))]
-                if threshold_frames < Freezing.calculate_freezing_time(ComparisonCoordinates, threshold_distance):
-                    cv2.putText(image, 'Freezing', (50, 280), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                if Head_T >= Threshold:
+                    #First check the head for freezing
+                    ComparisonCoordinates = [(int(Config.Headx[r2]), int(Config.Heady[r2])), (int(Config.Headx[r2 - 1]), int(Config.Heady[r2 - 1]))]
+                    if threshold_frames < Freezing.calculate_freezing_time(ComparisonCoordinates, threshold_distance):
+                        cv2.putText(image, 'Freezing', (50, 280), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
-                #Second, check the centerbody for freezing
-                ComparisonCoordinates = [(int(Config.CenterBodyx[r2]), int(Config.CenterBodyy[r2])), (int(Config.CenterBodyx[r2 - 1]), int(Config.CenterBodyy[r2 - 1]))]
-                if threshold_frames < Freezing.calculate_freezing_time(ComparisonCoordinates, threshold_distance):
-                    cv2.putText(image, 'Freezing', (50, 280), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        Config.freezing_frames_total = Config.freezing_frames_total + 1
+
+                        if not Config.FreezeState:
+                            Config.N_Freezing = Config.N_Freezing + 1
+                            Config.FreezeState = True
+
+                    else:
+                        Config.FreezeState = False
+
+                if CenterBody_T >= Threshold:
+                    #Second, check the centerbody for freezing
+                    ComparisonCoordinates = [(int(Config.CenterBodyx[r2]), int(Config.CenterBodyy[r2])), (int(Config.CenterBodyx[r2 - 1]), int(Config.CenterBodyy[r2 - 1]))]
+                    if threshold_frames < Freezing.calculate_freezing_time(ComparisonCoordinates, threshold_distance):
+                        cv2.putText(image, 'Freezing', (50, 280), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+
+                        Config.freezing_frames_total = Config.freezing_frames_total + 1
+
+                        if not Config.FreezeState:
+                            Config.N_Freezing = Config.N_Freezing + 1
+                            Config.FreezeState = True
+
+                    else:
+                        Config.FreezeState = False
 
 
             #if CropRon was not selected, then it will write the video at each loop
