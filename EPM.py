@@ -20,6 +20,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 """
+#C:/Users/juare/Desktop/hangar/MABA/Testing Zone/test.png
 
 import cv2
 
@@ -38,11 +39,24 @@ def draw_all_rectangles(image):
         draw_rectangle(image, rect_coordinates)
 
 def draw_points(event, x, y, flags, param):
-    if event == cv2.EVENT_LBUTTONDOWN:
-        points.append((x, y))
+    global points
 
-        # Draw a circle at the selected point
-        cv2.circle(image, (x, y), 3, (0, 0, 255), -1)
+    if event == cv2.EVENT_LBUTTONDOWN:
+        # Check if the click is within a previously placed point
+        for i, point in enumerate(points):
+            distance = cv2.norm((x, y), point)
+            if distance < 10:
+                # Modify the coordinates of the selected point
+                points[i] = (x, y)
+                break
+        else:
+            # Add a new point to the list
+            points.append((x, y))
+
+        # Draw circles at the selected points
+        image_copy = image.copy()
+        for point in points:
+            cv2.circle(image_copy, point, 3, (0, 0, 255), -1)
 
         # If four points are selected, calculate the rectangle coordinates
         if len(points) == 4:
@@ -53,7 +67,7 @@ def draw_points(event, x, y, flags, param):
             # Clear the points list for the next rectangle
             points.clear()
 
-        cv2.imshow("Image", image)
+        cv2.imshow("Image", image_copy)
 
 def calculate_rectangle_coordinates(points):
     return [points[0], points[1], points[2], points[3]]
@@ -74,6 +88,12 @@ while True:
     cv2.imshow("Image", image_copy)
 
     key = cv2.waitKey(1) & 0xFF
+
+    # Press 'r' to reset the points and rectangles
+    if key == ord("r"):
+        points.clear()
+        rectangles.clear()
+        image_copy = image.copy()
 
     # Press 'q' to exit
     if key == ord("q"):

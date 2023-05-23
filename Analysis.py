@@ -91,6 +91,7 @@ def RunSess(NoMoreFrames, codec, out):
 
             #this will be the Threshold value, between 0 and 1.
             Threshold = 0.8
+            #Threshold = 0.99
 
             #here we extract the X and Y coordinate from each tracked point. The threshold have no function in this part.
             Config.Nosex.append((trackerSess[0])[1])
@@ -517,9 +518,12 @@ def RunSess(NoMoreFrames, codec, out):
                         Config.I_OBJ_2 = False
 
             #Check if the mice is freezing
+            #Each body part added should add more frames to threshold
+            #Example: there is 60 frames per second, but since there is two body parts being counted, each one of them is going to add one frame
+            #So in this case, even though half a second would be 30 frames, for 2 body parts, it should be 60 frames for half a second
             if Config.Freeze:
-                threshold_frames = 120
-                threshold_distance = 4
+                threshold_frames = 60
+                threshold_distance = 3
 
                 #First check the head for freezing
                 ComparisonCoordinates = [(int(Config.Headx[r2]), int(Config.Heady[r2])), (int(Config.Headx[r2 - 1]), int(Config.Heady[r2 - 1]))]
