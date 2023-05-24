@@ -165,6 +165,14 @@ def ExtractCoordinatestxt(video_name):
         Config.ER_QY1 = variables.get("ER_QY1")
         Config.ER_QY2 = variables.get("ER_QY2")
 
+        #Crop Image ROI Coordinates
+        CropImage.y_start = convert_to_int(variables.get("y_start"))
+        CropImage.x_start = convert_to_int(variables.get("x_start"))
+        CropImage.y_end = convert_to_int(variables.get("y_end"))
+        CropImage.x_end = convert_to_int(variables.get("x_end"))
+
+        print('343478035370')
+        print(CropImage.y_start)
 
 def extractframes():
     codec = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
@@ -243,14 +251,35 @@ def extractframes():
 
                         break
 
-                    if (getsizeof(Config.RawImages) <= 20000):
-                        print('appending')
-                        Config.RawImages.append(image_np)
+                    if Config.CropImage:
+
+                        # Crop the frame using the ROI coordinates and append the cropped frame to the list of cropped frames
+                        roi_frame = image_np[CropImage.y_start:CropImage.y_end, CropImage.x_start:CropImage.x_end]
+
+                        #Set the resolution once again since, this time to the same of the ROI frame
+                        Config.resolution = roi_frame.shape[1], roi_frame.shape[0]
+                        out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
+
+                        if (getsizeof(Config.RawImages) <= 20000):
+                            print('appending')
+                            Config.RawImages.append(roi_frame)
+
+                        else:
+                            # LastFrame = (cap.get(1))
+                            Config.NoMoreFrames = False
+                            Analysis.RunSess(Config.NoMoreFrames, codec, out)
 
                     else:
-                        # LastFrame = (cap.get(1))
-                        Config.NoMoreFrames = False
-                        Analysis.RunSess(Config.NoMoreFrames, codec, out)
+
+                        if (getsizeof(Config.RawImages) <= 20000):
+                            print('appending')
+                            Config.RawImages.append(image_np)
+
+                        else:
+                            # LastFrame = (cap.get(1))
+                            Config.NoMoreFrames = False
+                            Analysis.RunSess(Config.NoMoreFrames, codec, out)
+
 
                 # Once there is no more frames, RunSess again with the remaining frames and and set "NoMoreFrames" to True
                 Config.NoMoreFrames = True

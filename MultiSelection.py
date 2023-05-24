@@ -33,8 +33,9 @@ import Analysis
 import Zones
 import NOR
 import Locomotion
+import CropImage
 
-module_names = ['Locomotion', 'Config', 'Zones', 'NOR']
+module_names = ['Locomotion', 'Config', 'Zones', 'NOR', 'CropImage']
 
 def get_variables_from_module(module):
     module_variables = {}
@@ -56,7 +57,6 @@ def get_variables_from_modules(video_name):
             module = sys.modules[module_name]
             module_variables = get_variables_from_module(module)
             variables[module_name] = module_variables
-    #print(variables)
 
     ApparatusCoordinates = str(Config.projectfolder) + '/' + "info_" + str(video_name) + ".txt"
     with open(ApparatusCoordinates, 'w') as file:
@@ -80,6 +80,8 @@ def MultiExtraction():
             ret, Config.image_nl = Config.cap.read()
 
             # Create logic to extract the coordinates of each video first
+            if Config.CropImage:
+                CropImage.CropForAnalysis()
 
             if Config.TrackZones:
                 Zones.SelectZones()
