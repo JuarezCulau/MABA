@@ -237,9 +237,14 @@ def extractframes():
                 Config.img.fill(255)
                 Config.video_name = video_name
 
-                out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
+                #out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
 
                 ExtractCoordinatestxt(video_name)
+
+                #Trying to fix the resolution
+                # Initialize ROI resolution based on the new resolution
+                Config.resolution = (CropImage.x_end - CropImage.x_start, CropImage.y_end - CropImage.y_start)
+                out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
 
                 # this loop if for the cycles described above. RunSess is called inside the loop so that I don't need to set the exact frame each cycle, it only keeps going from where it stopped
                 while (Config.cap.isOpened()):
@@ -257,8 +262,8 @@ def extractframes():
                         roi_frame = image_np[CropImage.y_start:CropImage.y_end, CropImage.x_start:CropImage.x_end]
 
                         #Set the resolution once again since, this time to the same of the ROI frame
-                        Config.resolution = roi_frame.shape[1], roi_frame.shape[0]
-                        out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
+                        #Config.resolution = roi_frame.shape[1], roi_frame.shape[0]
+                        #out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
 
                         if (getsizeof(Config.RawImages) <= 20000):
                             print('appending')
