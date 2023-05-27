@@ -27,6 +27,15 @@ import Zones
 import cv2
 import Analysis
 
+#Reset values for the next analysis
+def ResetValues():
+    Config.freezing_frames = 0
+    Config.N_Freezing = 0
+    Config.freezing_frames_total = 0
+    Config.FreezeState = False
+    Config.IntervalFreezing = 0
+    Config.N_IntervalFreezing = 0
+
 
 # Write results into txt file
 def writeFile():
@@ -190,12 +199,18 @@ def writeFile():
             file.write('Number of Interactions with Second Object: ' + str(Config.N_OBJ_2) + ' time')
 
     if Config.Freeze:
+        #Frames total was considered for two points, so it needs to be divided by two
+        Config.freezing_frames_total = Config.freezing_frames_total / 2
+        #Then, we get the frame rate of the video and divide it again to get the time in seconds
         TimeinFreezeState = Config.freezing_frames_total / Config.framerate
         file.write('--- Freezing State Detection ---')
         file.write('\n')
         file.write('Number of Freezing: ' + str(Config.N_Freezing))
         file.write('\n')
         file.write('Time in Freeze State: ' + str(TimeinFreezeState) + ' seconds')
+        file.write('\n')
+        file.write('Number of Interval Freezing: ' + str(Config.N_IntervalFreezing))
 
     print("File created :", file.name)
+    ResetValues()
     file.close

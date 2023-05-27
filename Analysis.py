@@ -525,6 +525,7 @@ def RunSess(NoMoreFrames, codec, out):
                 threshold_distance = 3
 
                 if Head_T >= Threshold:
+
                     #First check the head for freezing
                     ComparisonCoordinates = [(int(Config.Headx[r2]), int(Config.Heady[r2])), (int(Config.Headx[r2 - 1]), int(Config.Heady[r2 - 1]))]
                     if threshold_frames < Freezing.calculate_freezing_time(ComparisonCoordinates, threshold_distance):
@@ -536,8 +537,15 @@ def RunSess(NoMoreFrames, codec, out):
                             Config.N_Freezing = Config.N_Freezing + 1
                             Config.FreezeState = True
 
+                            # Check if there is an interval between freezing
+                            if Config.IntervalFreezing > 120:
+                                Config.N_IntervalFreezing = Config.N_IntervalFreezing + 1
+
+                        Config.IntervalFreezing = 0
+
                     else:
                         Config.FreezeState = False
+                        Config.IntervalFreezing = Config.IntervalFreezing + 1
 
                 if CenterBody_T >= Threshold:
                     #Second, check the centerbody for freezing
@@ -551,8 +559,22 @@ def RunSess(NoMoreFrames, codec, out):
                             Config.N_Freezing = Config.N_Freezing + 1
                             Config.FreezeState = True
 
+                            # Check if there is an interval between freezing
+                            if Config.IntervalFreezing > 120:
+                                Config.N_IntervalFreezing = Config.N_IntervalFreezing + 1
+
+                        Config.IntervalFreezing = 0
+
                     else:
                         Config.FreezeState = False
+                        Config.IntervalFreezing = Config.IntervalFreezing + 1
+
+                if Nose_T >= Threshold:
+                    #Third, check for nose movement, in this case the nose is going to be used only to cancel the freezing
+                    ComparisonCoordinates = [(int(Config.Nosex[r2]), int(Config.Nosey[r2])), (int(Config.Nosex[r2 - 1]), int(Config.Nosey[r2 - 1]))]
+                    if not threshold_frames < Freezing.nose_movement(ComparisonCoordinates, threshold_distance):
+                        Config.FreezeState = False
+                        Config.IntervalFreezing = Config.IntervalFreezing + 1
 
 
             #if CropRon was not selected, then it will write the video at each loop

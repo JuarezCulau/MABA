@@ -200,7 +200,8 @@ freezing_frames = 0
 N_Freezing = 0
 freezing_frames_total = 0
 FreezeState = False
-
+IntervalFreezing = 0
+N_IntervalFreezing = 0
 
 #First the remaining variables will be set, using the acquired values by user input
 def setglobalvariables(values):
