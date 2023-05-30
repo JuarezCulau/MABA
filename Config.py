@@ -149,8 +149,9 @@ CreateLocomotionGraph = False
 DualZone = False
 Interaction = False
 SingleVideo = False
-Freeze = True
-CropImage = True
+Freeze = False
+CropImage = False
+EPM = True
 
 def resetvalues():
     r = 0
@@ -191,9 +192,6 @@ def resetvalues():
     Zone11E = 0
     Zone12E = 0
 
-#Crop Image Variables
-
-
 #Freezing Variables
 global freezing_frames, N_Freezing, freezing_frames_total, FreezeState
 freezing_frames = 0
@@ -202,6 +200,26 @@ freezing_frames_total = 0
 FreezeState = False
 IntervalFreezing = 0
 N_IntervalFreezing = 0
+
+#EPM Variables
+global EPM_Rectangles, N_OpenArm, N_ClosedArm, N_NoseOutside
+EPM_Rectangles = []
+#Entry (N)
+N_OpenArm = 0
+N_ClosedArm = 0
+N_NoseOutside = 0
+N_Center = 0
+#Time (T)
+T_OpenArm = 0
+T_ClosedArm = 0
+T_Center = 0
+T_NoseOutside = 0
+#State (S)
+S_OpenArm = False
+S_ClosedArm = False
+S_Center = False
+S_NoseOutside = False
+
 
 #First the remaining variables will be set, using the acquired values by user input
 def setglobalvariables(values):

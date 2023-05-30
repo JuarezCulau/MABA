@@ -24,6 +24,7 @@ under the License.
 import tensorflow as tf
 import cv2
 import Config
+import EPM
 import Model
 import Frames
 import Zones
@@ -537,6 +538,9 @@ def RunSess(NoMoreFrames, codec, out):
                             Config.N_Freezing = Config.N_Freezing + 1
                             Config.FreezeState = True
 
+                            #Add the time when freezing started
+                            Config.freezing_frames_total = Config.freezing_frames_total + threshold_frames
+
                             # Check if there is an interval between freezing
                             if Config.IntervalFreezing > 120:
                                 Config.N_IntervalFreezing = Config.N_IntervalFreezing + 1
@@ -559,6 +563,9 @@ def RunSess(NoMoreFrames, codec, out):
                             Config.N_Freezing = Config.N_Freezing + 1
                             Config.FreezeState = True
 
+                            #Add the time when freezing started
+                            Config.freezing_frames_total = Config.freezing_frames_total + threshold_frames
+
                             # Check if there is an interval between freezing
                             if Config.IntervalFreezing > 120:
                                 Config.N_IntervalFreezing = Config.N_IntervalFreezing + 1
@@ -576,6 +583,99 @@ def RunSess(NoMoreFrames, codec, out):
                         Config.FreezeState = False
                         Config.IntervalFreezing = Config.IntervalFreezing + 1
 
+            #Elevated cross maze analysis
+            if Config.EPM:
+                # Check if the point is inside the rectangle
+                if FrameCenterBodyx >= EPM.op1_min_x and FrameCenterBodyx <= EPM.op1_max_x and FrameCenterBodyy >= EPM.op1_min_y and FrameCenterBodyy <= EPM.op1_max_y:
+                    cv2.putText(image, 'Open Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                    Config.T_OpenArm = Config.T_OpenArm + 1
+
+                    #Check if is already inside before adding another entry
+                    if not Config.S_OpenArm:
+                        Config.N_OpenArm = Config.N_OpenArm + 1
+                        Config.S_ClosedArm = False
+                        Config.S_Center = False
+                        Config.S_OpenArm = True
+
+                    #Check the nose location
+                    if FrameNosex < EPM.op1_min_x or FrameNosex > EPM.op1_max_x or FrameNosey < EPM.op1_min_y or FrameNosey > EPM.op1_max_y:
+                        cv2.putText(image, 'Nose Outside Arm', (50, 270), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        Config.T_NoseOutside = Config.T_NoseOutside + 1
+
+                        if not Config.S_NoseOutside:
+                            Config.N_NoseOutside = Config.N_NoseOutside + 1
+                            Config.S_NoseOutside = True
+
+                    else:
+                        Config.S_NoseOutside = False
+
+                if FrameCenterBodyx >= EPM.op2_min_x and FrameCenterBodyx <= EPM.op2_max_x and FrameCenterBodyy >= EPM.op2_min_y and FrameCenterBodyy <= EPM.op2_max_y:
+                    cv2.putText(image, 'Open Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                    Config.T_OpenArm = Config.T_OpenArm + 1
+
+                    #Check if is already inside before adding another entry
+                    if not Config.S_OpenArm:
+                        Config.N_OpenArm = Config.N_OpenArm + 1
+                        Config.S_ClosedArm = False
+                        Config.S_Center = False
+                        Config.S_OpenArm = True
+
+                    # Check the nose location
+                    if FrameNosex < EPM.op2_min_x or FrameNosex > EPM.op2_max_x or FrameNosey < EPM.op2_min_y or FrameNosey > EPM.op2_max_y:
+                        cv2.putText(image, 'Nose Outside Arm', (50, 270), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        Config.T_NoseOutside = Config.T_NoseOutside + 1
+
+                        if not Config.S_NoseOutside:
+                            Config.N_NoseOutside = Config.N_NoseOutside + 1
+                            Config.S_NoseOutside = True
+
+                    else:
+                        Config.S_NoseOutside = False
+
+                if FrameCenterBodyx >= EPM.c1_min_x and FrameCenterBodyx <= EPM.c1_max_x and FrameCenterBodyy >= EPM.c1_min_y and FrameCenterBodyy <= EPM.c1_max_y:
+                    cv2.putText(image, 'Closed Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                    Config.T_ClosedArm = Config.T_ClosedArm + 1
+
+                    #Check if is already inside before adding another entry
+                    if not Config.S_ClosedArm:
+                        Config.N_ClosedArm = Config.N_ClosedArm + 1
+                        Config.S_Center = False
+                        Config.S_OpenArm = False
+                        Config.S_ClosedArm = True
+
+                if FrameCenterBodyx >= EPM.c2_min_x and FrameCenterBodyx <= EPM.c2_max_x and FrameCenterBodyy >= EPM.c2_min_y and FrameCenterBodyy <= EPM.c2_max_y:
+                    cv2.putText(image, 'Closed Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                    Config.T_ClosedArm = Config.T_ClosedArm + 1
+
+                    # Check if is already inside before adding another entry
+                    if not Config.S_ClosedArm:
+                        Config.N_ClosedArm = Config.N_ClosedArm + 1
+                        Config.S_Center = False
+                        Config.S_OpenArm = False
+                        Config.S_ClosedArm = True
+
+                if FrameCenterBodyx >= EPM.center_min_x and FrameCenterBodyx <= EPM.center_max_x and FrameCenterBodyy >= EPM.center_min_y and FrameCenterBodyy <= EPM.center_max_y:
+                    cv2.putText(image, 'Center', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                    Config.T_Center = Config.T_Center + 1
+
+                    # Check if is already inside before adding another entry
+                    if not Config.S_Center:
+                        Config.N_Center = Config.N_Center + 1
+                        Config.S_OpenArm = False
+                        Config.S_ClosedArm = False
+                        Config.S_Center = True
+
+                    # Check the nose location
+                    if FrameNosex < EPM.center_min_x or FrameNosex > EPM.center_max_x or FrameNosey < EPM.center_min_y or FrameNosey > EPM.center_max_y:
+                        cv2.putText(image, 'Nose Outside Arm', (50, 270), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        Config.T_NoseOutside = Config.T_NoseOutside + 1
+
+                        if not Config.S_NoseOutside:
+                            Config.N_NoseOutside = Config.N_NoseOutside + 1
+                            Config.S_NoseOutside = True
+
+                    else:
+                        Config.S_NoseOutside = False
 
             #if CropRon was not selected, then it will write the video at each loop
             if not Config.CropRon:

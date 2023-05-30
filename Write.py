@@ -211,6 +211,32 @@ def writeFile():
         file.write('\n')
         file.write('Number of Interval Freezing: ' + str(Config.N_IntervalFreezing))
 
+    if Config.EPM:
+        #Calculate the time at each place by dividing the number of frames by the framerate of the video
+
+        TimeinOpenArm = Config.T_OpenArm / Config.framerate
+        TimeinClosedArm = Config.T_ClosedArm / Config.framerate
+        TimeinCenter = Config.T_Center / Config.framerate
+        TimeNoseOutside = Config.T_NoseOutside / Config.framerate
+
+        file.write('--- Elevated Plus Maze ---')
+        file.write('\n')
+        file.write('Number of Entries at Open Arm: ' + str(Config.N_OpenArm))
+        file.write('\n')
+        file.write('Number of Entries at Closed Arm: ' + str(Config.N_ClosedArm))
+        file.write('\n')
+        file.write('Number of Entries at Center: ' + str(Config.N_Center))
+        file.write('\n')
+        file.write('Number of Times with the Nose Outside: ' + str(Config.N_NoseOutside))
+        file.write('\n')
+        file.write('Time at Open Arm: ' + str(TimeinOpenArm) + 'seconds')
+        file.write('\n')
+        file.write('Time at Closed Arm: ' + str(TimeinClosedArm) + 'seconds')
+        file.write('\n')
+        file.write('Time at Center: ' + str(TimeinCenter) + 'seconds')
+        file.write('\n')
+        file.write('Time with nose outside: ' + str(TimeNoseOutside) + 'seconds')
+
     print("File created :", file.name)
     ResetValues()
     file.close

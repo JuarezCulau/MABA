@@ -24,6 +24,8 @@ under the License.
 
 import cv2
 
+import Config
+
 points = []
 rectangles = []
 
@@ -54,6 +56,7 @@ def draw_points(event, x, y, flags, param):
             points.append((x, y))
 
         # Draw circles at the selected points
+        image = Config.image_nl
         image_copy = image.copy()
         for point in points:
             cv2.circle(image_copy, point, 3, (0, 0, 255), -1)
@@ -61,8 +64,8 @@ def draw_points(event, x, y, flags, param):
         # If four points are selected, calculate the rectangle coordinates
         if len(points) == 4:
             rect_coordinates = calculate_rectangle_coordinates(points)
-            rectangles.append(rect_coordinates)
-            print(rectangles)
+            Config.EPM_Rectangles.append(rect_coordinates)
+            print(Config.EPM_Rectangles)
 
             # Clear the points list for the next rectangle
             points.clear()
@@ -72,31 +75,106 @@ def draw_points(event, x, y, flags, param):
 def calculate_rectangle_coordinates(points):
     return [points[0], points[1], points[2], points[3]]
 
-# Read the image
-image = cv2.imread("C:/Users/juare/Desktop/hangar/MABA/Testing Zone/test.png")
+def SetCoordinates():
+    global op1_min_x, op1_max_x, op1_min_y, op1_max_y, op2_min_x, op2_max_x, op2_min_y, op2_max_y, c1_min_x, c1_max_x, c1_min_y, c1_max_y, c2_min_x, c2_max_x, c2_min_y, c2_max_y, center_min_x, center_max_x, center_min_y, center_max_y
+    #Open Arm 1
+    # Extract the coordinates of the rectangle's corners
+    x1, y1 = (Config.EPM_Rectangles[0])[0]
+    x2, y2 = (Config.EPM_Rectangles[0])[1]
+    x3, y3 = (Config.EPM_Rectangles[0])[2]
+    x4, y4 = (Config.EPM_Rectangles[0])[3]
 
-# Create a copy of the image for drawing rectangles
-image_copy = image.copy()
+    # Calculate the bounding box of the rectangle
+    op1_min_x = min(x1, x2, x3, x4)
+    op1_max_x = max(x1, x2, x3, x4)
+    op1_min_y = min(y1, y2, y3, y4)
+    op1_max_y = max(y1, y2, y3, y4)
 
-# Create a window and set the mouse callback
-cv2.namedWindow("Image")
-cv2.setMouseCallback("Image", draw_points)
+    #Open Arm 2
+    #Repeat for the other rectangles selected
+    # Extract the coordinates of the rectangle's corners
+    x1, y1 = (Config.EPM_Rectangles[1])[0]
+    x2, y2 = (Config.EPM_Rectangles[1])[1]
+    x3, y3 = (Config.EPM_Rectangles[1])[2]
+    x4, y4 = (Config.EPM_Rectangles[1])[3]
 
-while True:
-    # Show the image with all rectangles
-    draw_all_rectangles(image_copy)
-    cv2.imshow("Image", image_copy)
+    # Calculate the bounding box of the rectangle
+    op2_min_x = min(x1, x2, x3, x4)
+    op2_max_x = max(x1, x2, x3, x4)
+    op2_min_y = min(y1, y2, y3, y4)
+    op2_max_y = max(y1, y2, y3, y4)
 
-    key = cv2.waitKey(1) & 0xFF
+    #Closed Arm 1
+    # Extract the coordinates of the rectangle's corners
+    x1, y1 = (Config.EPM_Rectangles[2])[0]
+    x2, y2 = (Config.EPM_Rectangles[2])[1]
+    x3, y3 = (Config.EPM_Rectangles[2])[2]
+    x4, y4 = (Config.EPM_Rectangles[2])[3]
 
-    # Press 'r' to reset the points and rectangles
-    if key == ord("r"):
-        points.clear()
-        rectangles.clear()
-        image_copy = image.copy()
+    # Calculate the bounding box of the rectangle
+    c1_min_x = min(x1, x2, x3, x4)
+    c1_max_x = max(x1, x2, x3, x4)
+    c1_min_y = min(y1, y2, y3, y4)
+    c1_max_y = max(y1, y2, y3, y4)
 
-    # Press 'q' to exit
-    if key == ord("q"):
-        break
+    #Closed Arm 2
+    # Extract the coordinates of the rectangle's corners
+    x1, y1 = (Config.EPM_Rectangles[3])[0]
+    x2, y2 = (Config.EPM_Rectangles[3])[1]
+    x3, y3 = (Config.EPM_Rectangles[3])[2]
+    x4, y4 = (Config.EPM_Rectangles[3])[3]
 
-cv2.destroyAllWindows()
+    # Calculate the bounding box of the rectangle
+    c2_min_x = min(x1, x2, x3, x4)
+    c2_max_x = max(x1, x2, x3, x4)
+    c2_min_y = min(y1, y2, y3, y4)
+    c2_max_y = max(y1, y2, y3, y4)
+
+    #Center
+    # Extract the coordinates of the rectangle's corners
+    x1, y1 = (Config.EPM_Rectangles[4])[0]
+    x2, y2 = (Config.EPM_Rectangles[4])[1]
+    x3, y3 = (Config.EPM_Rectangles[4])[2]
+    x4, y4 = (Config.EPM_Rectangles[4])[3]
+
+    # Calculate the bounding box of the rectangle
+    center_min_x = min(x1, x2, x3, x4)
+    center_max_x = max(x1, x2, x3, x4)
+    center_min_y = min(y1, y2, y3, y4)
+    center_max_y = max(y1, y2, y3, y4)
+
+def EPM_Selection():
+    # Read the image
+    image = Config.image_nl
+
+    # Create a copy of the image for drawing rectangles
+    image_copy = image.copy()
+
+    # Create a window and set the mouse callback
+    cv2.namedWindow("Image")
+    cv2.setMouseCallback("Image", draw_points)
+
+    exit_flag = False  # Flag variable to control the while loop
+
+    while not exit_flag:
+        # Show the image with all rectangles
+        draw_all_rectangles(image_copy)
+        cv2.imshow("Image", image_copy)
+
+        key = cv2.waitKey(1) & 0xFF
+
+        # Press 'r' to reset the points and rectangles
+        if key == ord("r"):
+            points.clear()
+            rectangles.clear()
+            image_copy = image.copy()
+
+        # Press 'q' to exit
+        if key == ord("q"):
+            break
+
+        if key == 27:  # 27 is the ASCII code for the Esc key
+            SetCoordinates()
+            exit_flag = True  # Set the flag to exit the while loop
+
+    cv2.destroyAllWindows()

@@ -23,6 +23,7 @@ under the License.
 
 import tensorflow as tf
 import Config
+import EPM
 import GUI
 import Frames
 import Zones
@@ -57,6 +58,9 @@ def loadModel():
     if Config.SingleVideo:
         if Config.CropImage:
             CropImage.CropForAnalysis()
+
+        if Config.EPM:
+            EPM.EPM_Selection()
 
         if Config.TrackZones:
             Zones.SelectZones()
