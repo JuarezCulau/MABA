@@ -27,6 +27,7 @@ import GUI
 from sys import getsizeof
 import Analysis
 import CropImage
+import EPM
 
 #The analysis is made in cycles.
 #Usually tensorflow is loaded for each frame, as a unique session. I am not using that way because it takes too long to load a new session each time for each frame
@@ -37,6 +38,7 @@ import CropImage
 #This is not a problem if your video has low resolution or if it's not that long, but if you have great resolution and or hours of video, then it would require too much video memory.
 #So we extract the frames in cycles, reducing the number of time a session is loaded from each frame to once each 2k frames or something close to that
 #You can also increase that number if you have memory enough and want to save a few seconds
+import Locomotion
 import NOR
 import Zones
 
@@ -160,10 +162,10 @@ def ExtractCoordinatestxt(video_name):
         NOR.OBJ2_QY2 = convert_to_int(variables.get("OBJ2_QY2"))
 
         #Locomotion Graph ROI Coordinates
-        Config.ER_QX1 = variables.get("ER_QX1")
-        Config.ER_QX2 = variables.get("ER_QX2")
-        Config.ER_QY1 = variables.get("ER_QY1")
-        Config.ER_QY2 = variables.get("ER_QY2")
+        Locomotion.ER_QX1 = variables.get("ER_QX1")
+        Locomotion.ER_QX2 = variables.get("ER_QX2")
+        Locomotion.ER_QY1 = variables.get("ER_QY1")
+        Locomotion.ER_QY2 = variables.get("ER_QY2")
 
         #Crop Image ROI Coordinates
         CropImage.y_start = convert_to_int(variables.get("y_start"))
@@ -171,8 +173,27 @@ def ExtractCoordinatestxt(video_name):
         CropImage.y_end = convert_to_int(variables.get("y_end"))
         CropImage.x_end = convert_to_int(variables.get("x_end"))
 
-        print('343478035370')
-        print(CropImage.y_start)
+        #EPM Zones Coordinates
+        EPM.op1_min_x = convert_to_int(variables.get("op1_min_x"))
+        EPM.op1_max_x = convert_to_int(variables.get("op1_max_x"))
+        EPM.op1_min_y = convert_to_int(variables.get("op1_min_y"))
+        EPM.op1_max_y = convert_to_int(variables.get("op1_max_y"))
+        EPM.op2_min_x = convert_to_int(variables.get("op2_min_x"))
+        EPM.op2_max_x = convert_to_int(variables.get("op2_max_x"))
+        EPM.op2_min_y = convert_to_int(variables.get("op2_min_y"))
+        EPM.op2_max_y = convert_to_int(variables.get("op2_max_y"))
+        EPM.c1_min_x = convert_to_int(variables.get("c1_min_x"))
+        EPM.c1_max_x = convert_to_int(variables.get("c1_max_x"))
+        EPM.c1_min_y = convert_to_int(variables.get("c1_min_y"))
+        EPM.c1_max_y = convert_to_int(variables.get("c1_max_y"))
+        EPM.c2_min_x = convert_to_int(variables.get("c2_min_x"))
+        EPM.c2_max_x = convert_to_int(variables.get("c2_max_x"))
+        EPM.c2_min_y = convert_to_int(variables.get("c2_min_y"))
+        EPM.c2_max_y = convert_to_int(variables.get("c2_max_y"))
+        EPM.center_min_x = convert_to_int(variables.get("center_min_x"))
+        EPM.center_max_x = convert_to_int(variables.get("center_max_x"))
+        EPM.center_min_y = convert_to_int(variables.get("center_min_y"))
+        EPM.center_max_y = convert_to_int(variables.get("center_max_y"))
 
 def extractframes():
     codec = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
@@ -237,13 +258,12 @@ def extractframes():
                 Config.img.fill(255)
                 Config.video_name = video_name
 
-                #out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
-
                 ExtractCoordinatestxt(video_name)
 
-                #Trying to fix the resolution
-                # Initialize ROI resolution based on the new resolution
-                Config.resolution = (CropImage.x_end - CropImage.x_start, CropImage.y_end - CropImage.y_start)
+                if Config.CropImage:
+                    # Initialize ROI resolution based on the new resolution (if it was selected
+                    Config.resolution = (CropImage.x_end - CropImage.x_start, CropImage.y_end - CropImage.y_start)
+
                 out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
 
                 # this loop if for the cycles described above. RunSess is called inside the loop so that I don't need to set the exact frame each cycle, it only keeps going from where it stopped

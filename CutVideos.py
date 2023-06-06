@@ -3,7 +3,7 @@ import cv2
 
 
 def create_duration_folders(output_folder):
-    durations = ['2min', '2_5min', '3_5min', '5min', '5_5min', '7_5min']
+    durations = ['2min', '2_5min', '8_33min', '13_58min', '19_41min', '25_25min']
     for duration in durations:
         folder_path = os.path.join(output_folder, duration)
         os.makedirs(folder_path, exist_ok=True)
@@ -21,13 +21,13 @@ def cut_videos_in_folder(folder_path):
             output_paths = [
                 os.path.join(output_folder, '2min', f'{video_name}_2min.mp4'),
                 os.path.join(output_folder, '2_5min', f'{video_name}_2_5min.mp4'),
-                os.path.join(output_folder, '3_5min', f'{video_name}_3_5min.mp4'),
-                os.path.join(output_folder, '5min', f'{video_name}_5min.mp4'),
-                os.path.join(output_folder, '5_5min', f'{video_name}_5_5min.mp4'),
-                os.path.join(output_folder, '7_5min', f'{video_name}_7_5min.mp4')
+                os.path.join(output_folder, '3_08min', f'{video_name}_3_08min.mp4'),
+                os.path.join(output_folder, '3_66min', f'{video_name}_3_66min.mp4'),
+                os.path.join(output_folder, '4_25min', f'{video_name}_4_25min.mp4'),
+                os.path.join(output_folder, '4_83min', f'{video_name}_4_83min.mp4')
             ]
 
-            time_intervals = [(0, 120), (120, 150), (210, 240), (300, 330), (330, 450), (450, 570)]
+            time_intervals = [(0, 120), (120, 150), (155, 185), (190, 220), (225, 255), (260, 290)]
 
             cut_video(video_path, output_paths, time_intervals)
 
@@ -59,5 +59,5 @@ def cut_video(video_path, output_paths, time_intervals):
 
 
 # Usage
-folder_path = 'C:/Users/juare/Desktop/hangar/MABA/Odaias Analysis/Ext1 Edited/just to get'
+folder_path = 'C:/Users/juare/Desktop/hangar/MABA/Odaias Analysis/Edited Videos/Videos/Ext_3567y56'
 cut_videos_in_folder(folder_path)

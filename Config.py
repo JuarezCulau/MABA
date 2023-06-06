@@ -214,12 +214,16 @@ T_OpenArm = 0
 T_ClosedArm = 0
 T_Center = 0
 T_NoseOutside = 0
+T_NoseInside = 0
 #State (S)
 S_OpenArm = False
 S_ClosedArm = False
 S_Center = False
 S_NoseOutside = False
-
+#No Interval Time at each Zone (IT)
+IT_OpenArm = 0
+IT_ClosedArm = 0
+IT_Center = 0
 
 #First the remaining variables will be set, using the acquired values by user input
 def setglobalvariables(values):

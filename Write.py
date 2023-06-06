@@ -35,7 +35,14 @@ def ResetValues():
     Config.FreezeState = False
     Config.IntervalFreezing = 0
     Config.N_IntervalFreezing = 0
-
+    Config.N_OpenArm = 0
+    Config.N_ClosedArm = 0
+    Config.N_Center = 0
+    Config.N_NoseOutside = 0
+    Config.T_NoseOutside = 0
+    Config.T_OpenArm = 0
+    Config.T_ClosedArm = 0
+    Config.T_Center = 0
 
 # Write results into txt file
 def writeFile():

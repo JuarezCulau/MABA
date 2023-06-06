@@ -20,7 +20,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 """
-
+import numpy as np
 import tensorflow as tf
 import cv2
 import Config
@@ -59,6 +59,32 @@ def ClearArrays():
     Config.tail4x.clear()
     Config.tail4y.clear()
 
+def selectPointEPM(TrackedPointX, TrackedPointY):
+    # Check if the main point is in more than one zone at the same time, if that's the case, switch to other tracked point (V = Early State Verification)
+    V_OpenArm = False
+    V_ClosedArm = False
+    V_Center = False
+
+    # Check if the main point is in more than one zone at the same time, if that's the case, switch to other tracked point (V = Early State Verification)
+    if TrackedPointX >= EPM.op1_min_x and TrackedPointX <= EPM.op1_max_x and TrackedPointY >= EPM.op1_min_y and TrackedPointY <= EPM.op1_max_y:
+        V_OpenArm = True
+
+    if TrackedPointX >= EPM.op2_min_x and TrackedPointX <= EPM.op2_max_x and TrackedPointY >= EPM.op2_min_y and TrackedPointY <= EPM.op2_max_y:
+        V_OpenArm = True
+
+    if TrackedPointX >= EPM.c1_min_x and TrackedPointX <= EPM.c1_max_x and TrackedPointY >= EPM.c1_min_y and TrackedPointY <= EPM.c1_max_y:
+        V_ClosedArm = True
+
+    if TrackedPointX >= EPM.c2_min_x and TrackedPointX <= EPM.c2_max_x and TrackedPointY >= EPM.c2_min_y and TrackedPointY <= EPM.c2_max_y:
+        V_ClosedArm = True
+
+    if TrackedPointX >= EPM.center_min_x and TrackedPointX <= EPM.center_max_x and TrackedPointY >= EPM.center_min_y and TrackedPointY <= EPM.center_max_y:
+        V_Center = True
+
+    # Count the number of true variables
+    true_count = sum([V_OpenArm, V_ClosedArm, V_Center])
+
+    return (true_count)
 
 #This is where magic happens, every value acquired so far is compiled here for the analysis
 def RunSess(NoMoreFrames, codec, out):
@@ -216,7 +242,8 @@ def RunSess(NoMoreFrames, codec, out):
 
             #Here it will mark the center body at the white img, for the locomotion graph. You can easily changing the point marked on the image here!
             if Config.CreateLocomotionGraph:
-                cv2.circle(Config.img, (FrameCenterBodyx, FrameCenterBodyy), radius=1, color=(0, 0, 0), thickness=4)
+                if CenterBody_T >= Threshold:
+                    cv2.circle(Config.img, (FrameCenterBodyx, FrameCenterBodyy), radius=1, color=(0, 0, 0), thickness=4)
 
             #Track zones analysis happens here.
             #ZoneXE will mark the number of frames that the mice is inside each zone and then divide it by the framerate to acquire the time inside each zone.
@@ -585,97 +612,200 @@ def RunSess(NoMoreFrames, codec, out):
 
             #Elevated cross maze analysis
             if Config.EPM:
+                TrackedPointX = FrameCenterBodyx
+                TrackedPointY = FrameCenterBodyy
+
+                #Set the nose range
+                confidence_nose = Nose_T >= Threshold
+
+                # center_nose_x_range = FrameNosex < EPM.center_min_x or FrameNosex > EPM.center_max_x
+                # center_nose_y_range = FrameNosey < EPM.center_min_y or FrameNosey > EPM.center_max_y
+                #
+                # c1_nose_x_range = FrameNosex < EPM.c1_min_x or FrameNosex > EPM.c1_max_x
+                # c1_nose_y_range = FrameNosey < EPM.c1_min_y or FrameNosey > EPM.c1_max_y
+                #
+                # c2_nose_x_range = FrameNosex < EPM.c2_min_x or FrameNosex > EPM.c2_max_x
+                # c2_nose_y_range = FrameNosey < EPM.c2_min_y or FrameNosey > EPM.c2_max_y
+                #
+                # op1_nose_x_range = FrameNosex < EPM.op1_min_x or FrameNosex > EPM.op1_max_x
+                # op1_nose_y_range = FrameNosey < EPM.op1_min_y or FrameNosey > EPM.op1_max_y
+                #
+                # op2_nose_x_range = FrameNosex < EPM.op2_min_x or FrameNosex > EPM.op2_max_x
+                # op2_nose_y_range = FrameNosey < EPM.op2_min_y or FrameNosey > EPM.op2_max_y
+                #
+                # center_nose_range = center_nose_x_range or center_nose_y_range
+                # c1_nose_range = c1_nose_x_range or c1_nose_y_range
+                # c2_nose_range = c2_nose_x_range or c2_nose_y_range
+                # op1_nose_range = op1_nose_x_range or op1_nose_y_range
+                # op2_nose_range = op2_nose_x_range or op2_nose_y_range
+
+                #Set Nose Range
+                op1_nose_range = cv2.pointPolygonTest(EPM.polygon_op1_umat, (FrameNosex, FrameNosey), False) < 0
+                op2_nose_range = cv2.pointPolygonTest(EPM.polygon_op2_umat, (FrameNosex, FrameNosey), False) < 0
+                c1_nose_range = cv2.pointPolygonTest(EPM.polygon_c1_umat, (FrameNosex, FrameNosey), False) < 0
+                c2_nose_range = cv2.pointPolygonTest(EPM.polygon_c2_umat, (FrameNosex, FrameNosey), False) < 0
+                center_nose_range = cv2.pointPolygonTest(EPM.polygon_center_umat, (FrameNosex, FrameNosey), False) < 0
+
+                # Check the location of tracked point and availability for the analysis
+                if selectPointEPM(TrackedPointX, TrackedPointY) >= 2:
+                    TrackedPointX = FrameBody1x
+                    TrackedPointY = FrameBody1y
+
+                    if selectPointEPM(TrackedPointX, TrackedPointY) >= 2:
+                        TrackedPointX = FrameHeadx
+                        TrackedPointY = FrameHeady
+
+                        if selectPointEPM(TrackedPointX, TrackedPointY) >= 2:
+                            TrackedPointX = FrameCenterBodyx
+                            TrackedPointY = FrameCenterBodyy
+
+                #Set Tracked Point Range
+                op1_nose_range = cv2.pointPolygonTest(EPM.polygon_op1_umat, (TrackedPointX, TrackedPointY), False) > 0
+                op2_nose_range = cv2.pointPolygonTest(EPM.polygon_op2_umat, (TrackedPointX, TrackedPointY), False) > 0
+                c1_nose_range = cv2.pointPolygonTest(EPM.polygon_c1_umat, (TrackedPointX, TrackedPointY), False) > 0
+                c2_nose_range = cv2.pointPolygonTest(EPM.polygon_c2_umat, (TrackedPointX, TrackedPointY), False) > 0
+                center_nose_range = cv2.pointPolygonTest(EPM.polygon_center_umat, (TrackedPointX, TrackedPointY), False) > 0
+
                 # Check if the point is inside the rectangle
-                if FrameCenterBodyx >= EPM.op1_min_x and FrameCenterBodyx <= EPM.op1_max_x and FrameCenterBodyy >= EPM.op1_min_y and FrameCenterBodyy <= EPM.op1_max_y:
-                    cv2.putText(image, 'Open Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                if TrackedPointX >= EPM.op1_min_x and TrackedPointX <= EPM.op1_max_x and TrackedPointY >= EPM.op1_min_y and TrackedPointY <= EPM.op1_max_y:
+                    #Add one frame to the total time and time without interval for this zone
                     Config.T_OpenArm = Config.T_OpenArm + 1
+                    Config.IT_OpenArm = Config.IT_OpenArm + 1
+
+                    if Config.S_OpenArm:
+                        cv2.putText(image, 'Open Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
                     #Check if is already inside before adding another entry
-                    if not Config.S_OpenArm:
+                    if not Config.S_OpenArm and Config.IT_OpenArm >= 60:
+                        #Add one entry
                         Config.N_OpenArm = Config.N_OpenArm + 1
+                        #Set the states of the other zones to false and this one to true
                         Config.S_ClosedArm = False
                         Config.S_Center = False
                         Config.S_OpenArm = True
+                        #Set the Time without interval in the other zones to 0
+                        Config.IT_ClosedArm = 0
+                        Config.IT_Center = 0
+                        cv2.putText(image, 'Open Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
-                    #Check the nose location
-                    if FrameNosex < EPM.op1_min_x or FrameNosex > EPM.op1_max_x or FrameNosey < EPM.op1_min_y or FrameNosey > EPM.op1_max_y:
-                        cv2.putText(image, 'Nose Outside Arm', (50, 270), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                    # Check nose location
+                    if confidence_nose and Config.S_OpenArm and (op1_nose_range and center_nose_range):
+
+                        cv2.putText(image, 'Nose Outside', (50, 270), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
                         Config.T_NoseOutside = Config.T_NoseOutside + 1
 
-                        if not Config.S_NoseOutside:
+                        if not Config.S_NoseOutside and Config.T_NoseInside >= 60:
+                            Config.T_NoseInside = 0
                             Config.N_NoseOutside = Config.N_NoseOutside + 1
                             Config.S_NoseOutside = True
 
                     else:
                         Config.S_NoseOutside = False
+                        Config.T_NoseInside = Config.T_NoseInside + 1
 
-                if FrameCenterBodyx >= EPM.op2_min_x and FrameCenterBodyx <= EPM.op2_max_x and FrameCenterBodyy >= EPM.op2_min_y and FrameCenterBodyy <= EPM.op2_max_y:
-                    cv2.putText(image, 'Open Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                if TrackedPointX >= EPM.op2_min_x and TrackedPointX <= EPM.op2_max_x and TrackedPointY >= EPM.op2_min_y and TrackedPointY <= EPM.op2_max_y:
                     Config.T_OpenArm = Config.T_OpenArm + 1
+                    Config.IT_OpenArm = Config.IT_OpenArm + 1
+
+                    if Config.S_OpenArm:
+                        cv2.putText(image, 'Open Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
                     #Check if is already inside before adding another entry
-                    if not Config.S_OpenArm:
+                    if not Config.S_OpenArm and Config.IT_OpenArm >= 60:
                         Config.N_OpenArm = Config.N_OpenArm + 1
                         Config.S_ClosedArm = False
                         Config.S_Center = False
                         Config.S_OpenArm = True
+                        Config.IT_ClosedArm = 0
+                        Config.IT_Center = 0
+                        cv2.putText(image, 'Open Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
-                    # Check the nose location
-                    if FrameNosex < EPM.op2_min_x or FrameNosex > EPM.op2_max_x or FrameNosey < EPM.op2_min_y or FrameNosey > EPM.op2_max_y:
-                        cv2.putText(image, 'Nose Outside Arm', (50, 270), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                    # Check nose location
+                    if confidence_nose and Config.S_OpenArm and (op2_nose_range and center_nose_range):
+                        cv2.putText(image, 'Nose Outside', (50, 270), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
                         Config.T_NoseOutside = Config.T_NoseOutside + 1
 
-                        if not Config.S_NoseOutside:
+                        if not Config.S_NoseOutside and Config.T_NoseInside >= 60:
+                            Config.T_NoseInside = 0
                             Config.N_NoseOutside = Config.N_NoseOutside + 1
                             Config.S_NoseOutside = True
 
                     else:
                         Config.S_NoseOutside = False
+                        Config.T_NoseInside = Config.T_NoseInside + 1
 
-                if FrameCenterBodyx >= EPM.c1_min_x and FrameCenterBodyx <= EPM.c1_max_x and FrameCenterBodyy >= EPM.c1_min_y and FrameCenterBodyy <= EPM.c1_max_y:
-                    cv2.putText(image, 'Closed Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                if TrackedPointX >= EPM.c1_min_x and TrackedPointX <= EPM.c1_max_x and TrackedPointY >= EPM.c1_min_y and TrackedPointY <= EPM.c1_max_y:
                     Config.T_ClosedArm = Config.T_ClosedArm + 1
+                    Config.T_NoseInside = Config.T_NoseInside + 1
+                    Config.IT_ClosedArm = Config.IT_ClosedArm + 1
+
+                    if Config.S_ClosedArm:
+                        cv2.putText(image, 'Closed Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
                     #Check if is already inside before adding another entry
-                    if not Config.S_ClosedArm:
+                    if not Config.S_ClosedArm and Config.IT_ClosedArm >= 60:
                         Config.N_ClosedArm = Config.N_ClosedArm + 1
                         Config.S_Center = False
                         Config.S_OpenArm = False
                         Config.S_ClosedArm = True
+                        Config.IT_OpenArm = 0
+                        Config.IT_Center = 0
+                        cv2.putText(image, 'Closed Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
-                if FrameCenterBodyx >= EPM.c2_min_x and FrameCenterBodyx <= EPM.c2_max_x and FrameCenterBodyy >= EPM.c2_min_y and FrameCenterBodyy <= EPM.c2_max_y:
-                    cv2.putText(image, 'Closed Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                if TrackedPointX >= EPM.c2_min_x and TrackedPointX <= EPM.c2_max_x and TrackedPointY >= EPM.c2_min_y and TrackedPointY <= EPM.c2_max_y:
                     Config.T_ClosedArm = Config.T_ClosedArm + 1
+                    Config.T_NoseInside = Config.T_NoseInside + 1
+                    Config.IT_ClosedArm = Config.IT_ClosedArm + 1
+
+                    if Config.S_ClosedArm:
+                        cv2.putText(image, 'Closed Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
                     # Check if is already inside before adding another entry
-                    if not Config.S_ClosedArm:
+                    if not Config.S_ClosedArm and Config.IT_ClosedArm >= 60:
                         Config.N_ClosedArm = Config.N_ClosedArm + 1
                         Config.S_Center = False
                         Config.S_OpenArm = False
                         Config.S_ClosedArm = True
+                        Config.IT_OpenArm = 0
+                        Config.IT_Center = 0
+                        cv2.putText(image, 'Closed Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
-                if FrameCenterBodyx >= EPM.center_min_x and FrameCenterBodyx <= EPM.center_max_x and FrameCenterBodyy >= EPM.center_min_y and FrameCenterBodyy <= EPM.center_max_y:
-                    cv2.putText(image, 'Center', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                if TrackedPointX >= EPM.center_min_x and TrackedPointX <= EPM.center_max_x and TrackedPointY >= EPM.center_min_y and TrackedPointY <= EPM.center_max_y:
                     Config.T_Center = Config.T_Center + 1
+                    Config.IT_Center = Config.IT_Center + 1
 
-                    # Check if is already inside before adding another entry
-                    if not Config.S_Center:
+                    #Small check to see if it's on the center
+                    cv2.putText(image, 'Center', (50, 400), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+
+                    if Config.S_Center:
+                        cv2.putText(image, 'Center', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+
+                    # Check if is already inside before adding another entry, since there is no much time in the center, it is reduced (10)
+                    if not Config.S_Center and Config.IT_Center >= 10:
                         Config.N_Center = Config.N_Center + 1
                         Config.S_OpenArm = False
                         Config.S_ClosedArm = False
                         Config.S_Center = True
+                        Config.IT_OpenArm = 0
+                        Config.IT_ClosedArm = 0
+                        cv2.putText(image, 'Center', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
-                    # Check the nose location
-                    if FrameNosex < EPM.center_min_x or FrameNosex > EPM.center_max_x or FrameNosey < EPM.center_min_y or FrameNosey > EPM.center_max_y:
-                        cv2.putText(image, 'Nose Outside Arm', (50, 270), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+
+                    # Check nose location
+                    #In this case, I am going to check if it's outside every zone, not only center.
+                    if confidence_nose and Config.S_Center and (center_nose_range and c1_nose_range and c2_nose_range and op1_nose_range and op2_nose_range):
+
+                        cv2.putText(image, 'Nose Outside Arm (Center)', (50, 270), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
                         Config.T_NoseOutside = Config.T_NoseOutside + 1
 
-                        if not Config.S_NoseOutside:
+                        if not Config.S_NoseOutside and Config.T_NoseInside >= 60:
+                            Config.T_NoseInside = 0
                             Config.N_NoseOutside = Config.N_NoseOutside + 1
                             Config.S_NoseOutside = True
 
                     else:
                         Config.S_NoseOutside = False
+                        Config.T_NoseInside = Config.T_NoseInside + 1
 
             #if CropRon was not selected, then it will write the video at each loop
             if not Config.CropRon:

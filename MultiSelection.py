@@ -34,8 +34,9 @@ import Zones
 import NOR
 import Locomotion
 import CropImage
+import EPM
 
-module_names = ['Locomotion', 'Config', 'Zones', 'NOR', 'CropImage']
+module_names = ['Locomotion', 'Config', 'Zones', 'NOR', 'CropImage', 'EPM']
 
 def get_variables_from_module(module):
     module_variables = {}
@@ -82,6 +83,9 @@ def MultiExtraction():
             # Create logic to extract the coordinates of each video first
             if Config.CropImage:
                 CropImage.CropForAnalysis()
+
+            if Config.EPM:
+                EPM.EPM_Selection()
 
             if Config.TrackZones:
                 Zones.SelectZones()
