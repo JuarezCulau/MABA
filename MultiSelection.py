@@ -38,6 +38,11 @@ import EPM
 
 module_names = ['Locomotion', 'Config', 'Zones', 'NOR', 'CropImage', 'EPM']
 
+#Reset values from one selection to the other if needed
+def reset_values():
+    if Config.EPM:
+        Config.EPM_Rectangles.clear()
+
 def get_variables_from_module(module):
     module_variables = {}
     for name in dir(module):
@@ -78,6 +83,7 @@ def MultiExtraction():
             w = int(Config.cap.get(3))
             h = int(Config.cap.get(4))
             Config.resolution = (w, h)
+
             ret, Config.image_nl = Config.cap.read()
 
             # Create logic to extract the coordinates of each video first
@@ -105,6 +111,8 @@ def MultiExtraction():
             print('Writing Coordinates into TxT')
 
             get_variables_from_modules(video_name)
+
+            reset_values()
 
     print('load model extract frames call')
     Frames.extractframes()

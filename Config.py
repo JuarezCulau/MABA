@@ -229,13 +229,13 @@ IT_Center = 0
 def setglobalvariables(values):
     global modelpath, videopath, projectfolder, sample, cap, framerate, w, h, resolution, image_nl, img, videopath, video_name
 
-
-
-
+    #Locations
     modelpath = values['-ModelPB-']
     videopath = values['-VideoFile-']
     projectfolder = values['-Folder-']
     sample = values['-Sample-']
+
+    #Data from video for selection
     cap = cv2.VideoCapture(videopath)
     framerate = round(cap.get(5), 2)
     w = int(cap.get(3))

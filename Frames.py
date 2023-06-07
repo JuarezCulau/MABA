@@ -233,7 +233,6 @@ def extractframes():
     #if the coordinates were extracted from multiple videos, a txt file was generated and the coordinates are loaded here for each analyzed video
     else:
 
-
         for video_name in os.listdir(Config.videopath):
             if video_name.endswith(('.mp4', '.avi')):
                 video_path = os.path.join(Config.videopath, video_name)
