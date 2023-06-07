@@ -354,9 +354,18 @@ def SetCoordinates3():
             center_min_y = min_y
             center_max_y = max_y
 
+#This function is going to be called in the case of multiple videos, to set the UMat from tne NumpArray saved on the txt file
+def GenerateUMat():
+    # Create a cv::UMat object from the numpy array
+    polygon_op1_umat = cv2.UMat(polygon_op1)
+    polygon_op2_umat = cv2.UMat(polygon_op2)
+    polygon_c1_umat = cv2.UMat(polygon_c1)
+    polygon_c2_umat = cv2.UMat(polygon_c2)
+    polygon_center_umat = cv2.UMat(polygon_center)
 
 def SetCoordinates6(image, polygons):
     global polygon_op1_umat, polygon_op2_umat, polygon_c1_umat, polygon_c2_umat, polygon_center_umat
+    global polygon_op1, polygon_op2, polygon_c1, polygon_c2, polygon_center
 
     p_op1 = []
     p_op2 = []
@@ -400,7 +409,6 @@ def SetCoordinates6(image, polygons):
     polygon_c1_umat = cv2.UMat(polygon_c1)
     polygon_c2_umat = cv2.UMat(polygon_c2)
     polygon_center_umat = cv2.UMat(polygon_center)
-
 
 #Only for debug, at least for now
 def draw_polygons(image, polygons):
@@ -485,7 +493,7 @@ def SetCoordinates():
     center_min_y = min(y1, y2, y3, y4)
     center_max_y = max(y1, y2, y3, y4)
 
-    SetCoordinates6(Config.image_nl, Config.EPM_Rectangles)
+    #SetCoordinates6(Config.image_nl, Config.EPM_Rectangles)
 
 def EPM_Selection():
     # Read the image
@@ -518,7 +526,7 @@ def EPM_Selection():
             break
 
         if key == 27:  # 27 is the ASCII code for the Esc key
-            SetCoordinates()
+            SetCoordinates6(Config.image_nl, Config.EPM_Rectangles)
             #RemoveIntersections()
             #SetCoordinates5()
             exit_flag = True  # Set the flag to exit the while loop

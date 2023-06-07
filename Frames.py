@@ -174,26 +174,16 @@ def ExtractCoordinatestxt(video_name):
         CropImage.x_end = convert_to_int(variables.get("x_end"))
 
         #EPM Zones Coordinates
-        EPM.op1_min_x = convert_to_int(variables.get("op1_min_x"))
-        EPM.op1_max_x = convert_to_int(variables.get("op1_max_x"))
-        EPM.op1_min_y = convert_to_int(variables.get("op1_min_y"))
-        EPM.op1_max_y = convert_to_int(variables.get("op1_max_y"))
-        EPM.op2_min_x = convert_to_int(variables.get("op2_min_x"))
-        EPM.op2_max_x = convert_to_int(variables.get("op2_max_x"))
-        EPM.op2_min_y = convert_to_int(variables.get("op2_min_y"))
-        EPM.op2_max_y = convert_to_int(variables.get("op2_max_y"))
-        EPM.c1_min_x = convert_to_int(variables.get("c1_min_x"))
-        EPM.c1_max_x = convert_to_int(variables.get("c1_max_x"))
-        EPM.c1_min_y = convert_to_int(variables.get("c1_min_y"))
-        EPM.c1_max_y = convert_to_int(variables.get("c1_max_y"))
-        EPM.c2_min_x = convert_to_int(variables.get("c2_min_x"))
-        EPM.c2_max_x = convert_to_int(variables.get("c2_max_x"))
-        EPM.c2_min_y = convert_to_int(variables.get("c2_min_y"))
-        EPM.c2_max_y = convert_to_int(variables.get("c2_max_y"))
-        EPM.center_min_x = convert_to_int(variables.get("center_min_x"))
-        EPM.center_max_x = convert_to_int(variables.get("center_max_x"))
-        EPM.center_min_y = convert_to_int(variables.get("center_min_y"))
-        EPM.center_max_y = convert_to_int(variables.get("center_max_y"))
+        if Config.EPM:
+            #It's not possible to store UMat, so I am saving the Nump Arrays in the txt file, then calling a function that is going to convert into UMAT
+            EPM.polygon_op1 = convert_to_int(variables.get("polygon_op1"))
+            EPM.polygon_op2 = convert_to_int(variables.get("polygon_op2"))
+            EPM.polygon_c1 = convert_to_int(variables.get("polygon_c1"))
+            EPM.polygon_c2 = convert_to_int(variables.get("polygon_c2"))
+            EPM.polygon_center = convert_to_int(variables.get("polygon_center"))
+
+            #Convert the Nump Array into UMat
+            EPM.GenerateUMat()
 
 def extractframes():
     codec = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')

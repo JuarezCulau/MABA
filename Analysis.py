@@ -66,19 +66,19 @@ def selectPointEPM(TrackedPointX, TrackedPointY):
     V_Center = False
 
     # Check if the main point is in more than one zone at the same time, if that's the case, switch to other tracked point (V = Early State Verification)
-    if TrackedPointX >= EPM.op1_min_x and TrackedPointX <= EPM.op1_max_x and TrackedPointY >= EPM.op1_min_y and TrackedPointY <= EPM.op1_max_y:
+    if cv2.pointPolygonTest(EPM.polygon_op1_umat, (TrackedPointX, TrackedPointY), False) > 0:
         V_OpenArm = True
 
-    if TrackedPointX >= EPM.op2_min_x and TrackedPointX <= EPM.op2_max_x and TrackedPointY >= EPM.op2_min_y and TrackedPointY <= EPM.op2_max_y:
+    if cv2.pointPolygonTest(EPM.polygon_op2_umat, (TrackedPointX, TrackedPointY), False) > 0:
         V_OpenArm = True
 
-    if TrackedPointX >= EPM.c1_min_x and TrackedPointX <= EPM.c1_max_x and TrackedPointY >= EPM.c1_min_y and TrackedPointY <= EPM.c1_max_y:
+    if cv2.pointPolygonTest(EPM.polygon_c1_umat, (TrackedPointX, TrackedPointY), False) > 0:
         V_ClosedArm = True
 
-    if TrackedPointX >= EPM.c2_min_x and TrackedPointX <= EPM.c2_max_x and TrackedPointY >= EPM.c2_min_y and TrackedPointY <= EPM.c2_max_y:
+    if cv2.pointPolygonTest(EPM.polygon_c2_umat, (TrackedPointX, TrackedPointY), False) > 0:
         V_ClosedArm = True
 
-    if TrackedPointX >= EPM.center_min_x and TrackedPointX <= EPM.center_max_x and TrackedPointY >= EPM.center_min_y and TrackedPointY <= EPM.center_max_y:
+    if cv2.pointPolygonTest(EPM.polygon_center_umat, (TrackedPointX, TrackedPointY), False) > 0:
         V_Center = True
 
     # Count the number of true variables
@@ -615,29 +615,8 @@ def RunSess(NoMoreFrames, codec, out):
                 TrackedPointX = FrameCenterBodyx
                 TrackedPointY = FrameCenterBodyy
 
-                #Set the nose range
+                #Set the nose confidence
                 confidence_nose = Nose_T >= Threshold
-
-                # center_nose_x_range = FrameNosex < EPM.center_min_x or FrameNosex > EPM.center_max_x
-                # center_nose_y_range = FrameNosey < EPM.center_min_y or FrameNosey > EPM.center_max_y
-                #
-                # c1_nose_x_range = FrameNosex < EPM.c1_min_x or FrameNosex > EPM.c1_max_x
-                # c1_nose_y_range = FrameNosey < EPM.c1_min_y or FrameNosey > EPM.c1_max_y
-                #
-                # c2_nose_x_range = FrameNosex < EPM.c2_min_x or FrameNosex > EPM.c2_max_x
-                # c2_nose_y_range = FrameNosey < EPM.c2_min_y or FrameNosey > EPM.c2_max_y
-                #
-                # op1_nose_x_range = FrameNosex < EPM.op1_min_x or FrameNosex > EPM.op1_max_x
-                # op1_nose_y_range = FrameNosey < EPM.op1_min_y or FrameNosey > EPM.op1_max_y
-                #
-                # op2_nose_x_range = FrameNosex < EPM.op2_min_x or FrameNosex > EPM.op2_max_x
-                # op2_nose_y_range = FrameNosey < EPM.op2_min_y or FrameNosey > EPM.op2_max_y
-                #
-                # center_nose_range = center_nose_x_range or center_nose_y_range
-                # c1_nose_range = c1_nose_x_range or c1_nose_y_range
-                # c2_nose_range = c2_nose_x_range or c2_nose_y_range
-                # op1_nose_range = op1_nose_x_range or op1_nose_y_range
-                # op2_nose_range = op2_nose_x_range or op2_nose_y_range
 
                 #Set Nose Range
                 op1_nose_range = cv2.pointPolygonTest(EPM.polygon_op1_umat, (FrameNosex, FrameNosey), False) < 0
@@ -660,33 +639,40 @@ def RunSess(NoMoreFrames, codec, out):
                             TrackedPointY = FrameCenterBodyy
 
                 #Set Tracked Point Range
-                op1_nose_range = cv2.pointPolygonTest(EPM.polygon_op1_umat, (TrackedPointX, TrackedPointY), False) > 0
-                op2_nose_range = cv2.pointPolygonTest(EPM.polygon_op2_umat, (TrackedPointX, TrackedPointY), False) > 0
-                c1_nose_range = cv2.pointPolygonTest(EPM.polygon_c1_umat, (TrackedPointX, TrackedPointY), False) > 0
-                c2_nose_range = cv2.pointPolygonTest(EPM.polygon_c2_umat, (TrackedPointX, TrackedPointY), False) > 0
-                center_nose_range = cv2.pointPolygonTest(EPM.polygon_center_umat, (TrackedPointX, TrackedPointY), False) > 0
+                op1_tracked_range = cv2.pointPolygonTest(EPM.polygon_op1_umat, (TrackedPointX, TrackedPointY), False) > 0
+                op2_tracked_range = cv2.pointPolygonTest(EPM.polygon_op2_umat, (TrackedPointX, TrackedPointY), False) > 0
+                c1_tracked_range = cv2.pointPolygonTest(EPM.polygon_c1_umat, (TrackedPointX, TrackedPointY), False) > 0
+                c2_tracked_range = cv2.pointPolygonTest(EPM.polygon_c2_umat, (TrackedPointX, TrackedPointY), False) > 0
+                center_tracked_range = cv2.pointPolygonTest(EPM.polygon_center_umat, (TrackedPointX, TrackedPointY), False) > 0
 
                 # Check if the point is inside the rectangle
-                if TrackedPointX >= EPM.op1_min_x and TrackedPointX <= EPM.op1_max_x and TrackedPointY >= EPM.op1_min_y and TrackedPointY <= EPM.op1_max_y:
-                    #Add one frame to the total time and time without interval for this zone
-                    Config.T_OpenArm = Config.T_OpenArm + 1
+                if op1_tracked_range:
+                    #Add one frame to the time without interval for this zone
                     Config.IT_OpenArm = Config.IT_OpenArm + 1
 
                     if Config.S_OpenArm:
                         cv2.putText(image, 'Open Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
+                        #Add one frame to thte total time in this zone
+                        Config.T_OpenArm = Config.T_OpenArm + 1
+
                     #Check if is already inside before adding another entry
-                    if not Config.S_OpenArm and Config.IT_OpenArm >= 60:
+                    if not Config.S_OpenArm and Config.IT_OpenArm >= 15:
                         #Add one entry
                         Config.N_OpenArm = Config.N_OpenArm + 1
+
                         #Set the states of the other zones to false and this one to true
                         Config.S_ClosedArm = False
                         Config.S_Center = False
                         Config.S_OpenArm = True
+
                         #Set the Time without interval in the other zones to 0
                         Config.IT_ClosedArm = 0
                         Config.IT_Center = 0
                         cv2.putText(image, 'Open Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+
+                        #Add the interval count to the total time
+                        Config.T_OpenArm = Config.T_OpenArm + Config.IT_OpenArm
 
                     # Check nose location
                     if confidence_nose and Config.S_OpenArm and (op1_nose_range and center_nose_range):
@@ -703,15 +689,17 @@ def RunSess(NoMoreFrames, codec, out):
                         Config.S_NoseOutside = False
                         Config.T_NoseInside = Config.T_NoseInside + 1
 
-                if TrackedPointX >= EPM.op2_min_x and TrackedPointX <= EPM.op2_max_x and TrackedPointY >= EPM.op2_min_y and TrackedPointY <= EPM.op2_max_y:
-                    Config.T_OpenArm = Config.T_OpenArm + 1
+                if op2_tracked_range:
                     Config.IT_OpenArm = Config.IT_OpenArm + 1
 
                     if Config.S_OpenArm:
                         cv2.putText(image, 'Open Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
+                        #Add one frame to thte total time in this zone
+                        Config.T_OpenArm = Config.T_OpenArm + 1
+
                     #Check if is already inside before adding another entry
-                    if not Config.S_OpenArm and Config.IT_OpenArm >= 60:
+                    if not Config.S_OpenArm and Config.IT_OpenArm >= 15:
                         Config.N_OpenArm = Config.N_OpenArm + 1
                         Config.S_ClosedArm = False
                         Config.S_Center = False
@@ -719,6 +707,8 @@ def RunSess(NoMoreFrames, codec, out):
                         Config.IT_ClosedArm = 0
                         Config.IT_Center = 0
                         cv2.putText(image, 'Open Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        #Add the interval count to the total time
+                        Config.T_OpenArm = Config.T_OpenArm + Config.IT_OpenArm
 
                     # Check nose location
                     if confidence_nose and Config.S_OpenArm and (op2_nose_range and center_nose_range):
@@ -734,16 +724,19 @@ def RunSess(NoMoreFrames, codec, out):
                         Config.S_NoseOutside = False
                         Config.T_NoseInside = Config.T_NoseInside + 1
 
-                if TrackedPointX >= EPM.c1_min_x and TrackedPointX <= EPM.c1_max_x and TrackedPointY >= EPM.c1_min_y and TrackedPointY <= EPM.c1_max_y:
-                    Config.T_ClosedArm = Config.T_ClosedArm + 1
+                if c1_tracked_range:
+                    #Adding Time with nose inside at this part because there is no check for nose outside at the closed arms
                     Config.T_NoseInside = Config.T_NoseInside + 1
                     Config.IT_ClosedArm = Config.IT_ClosedArm + 1
 
                     if Config.S_ClosedArm:
                         cv2.putText(image, 'Closed Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+
+                        #Add the interval count to the total time
+                        Config.T_ClosedArm = Config.T_ClosedArm + 1
 
                     #Check if is already inside before adding another entry
-                    if not Config.S_ClosedArm and Config.IT_ClosedArm >= 60:
+                    if not Config.S_ClosedArm and Config.IT_ClosedArm >= 15:
                         Config.N_ClosedArm = Config.N_ClosedArm + 1
                         Config.S_Center = False
                         Config.S_OpenArm = False
@@ -751,17 +744,21 @@ def RunSess(NoMoreFrames, codec, out):
                         Config.IT_OpenArm = 0
                         Config.IT_Center = 0
                         cv2.putText(image, 'Closed Arm 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        Config.T_ClosedArm = Config.T_ClosedArm + Config.IT_ClosedArm
 
-                if TrackedPointX >= EPM.c2_min_x and TrackedPointX <= EPM.c2_max_x and TrackedPointY >= EPM.c2_min_y and TrackedPointY <= EPM.c2_max_y:
-                    Config.T_ClosedArm = Config.T_ClosedArm + 1
+                if c2_tracked_range:
+                    #Adding Time with nose inside at this part because there is no check for nose outside at the closed arms
                     Config.T_NoseInside = Config.T_NoseInside + 1
                     Config.IT_ClosedArm = Config.IT_ClosedArm + 1
 
                     if Config.S_ClosedArm:
                         cv2.putText(image, 'Closed Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
+                        #Add the interval count to the total time
+                        Config.T_ClosedArm = Config.T_ClosedArm + 1
+
                     # Check if is already inside before adding another entry
-                    if not Config.S_ClosedArm and Config.IT_ClosedArm >= 60:
+                    if not Config.S_ClosedArm and Config.IT_ClosedArm >= 15:
                         Config.N_ClosedArm = Config.N_ClosedArm + 1
                         Config.S_Center = False
                         Config.S_OpenArm = False
@@ -769,19 +766,17 @@ def RunSess(NoMoreFrames, codec, out):
                         Config.IT_OpenArm = 0
                         Config.IT_Center = 0
                         cv2.putText(image, 'Closed Arm 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        Config.T_ClosedArm = Config.T_ClosedArm + Config.IT_ClosedArm
 
-                if TrackedPointX >= EPM.center_min_x and TrackedPointX <= EPM.center_max_x and TrackedPointY >= EPM.center_min_y and TrackedPointY <= EPM.center_max_y:
-                    Config.T_Center = Config.T_Center + 1
+                if center_tracked_range:
                     Config.IT_Center = Config.IT_Center + 1
-
-                    #Small check to see if it's on the center
-                    cv2.putText(image, 'Center', (50, 400), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
                     if Config.S_Center:
                         cv2.putText(image, 'Center', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        Config.T_Center = Config.T_Center + 1
 
-                    # Check if is already inside before adding another entry, since there is no much time in the center, it is reduced (10)
-                    if not Config.S_Center and Config.IT_Center >= 10:
+                    # Check if is already inside before adding another entry, since there is no much time in the center, it is reduced (5)
+                    if not Config.S_Center and Config.IT_Center >= 5:
                         Config.N_Center = Config.N_Center + 1
                         Config.S_OpenArm = False
                         Config.S_ClosedArm = False
@@ -789,6 +784,7 @@ def RunSess(NoMoreFrames, codec, out):
                         Config.IT_OpenArm = 0
                         Config.IT_ClosedArm = 0
                         cv2.putText(image, 'Center', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        Config.T_Center = Config.T_Center + Config.IT_Center
 
 
                     # Check nose location
