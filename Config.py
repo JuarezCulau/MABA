@@ -151,7 +151,7 @@ Interaction = False
 SingleVideo = False
 Freeze = False
 CropImage = False
-EPM = True
+EPM = False
 
 def resetvalues():
     r = 0
