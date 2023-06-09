@@ -27,6 +27,22 @@ import Zones
 import cv2
 import Analysis
 
+#Reset values for the next analysis
+def ResetValues():
+    Config.freezing_frames = 0
+    Config.N_Freezing = 0
+    Config.freezing_frames_total = 0
+    Config.FreezeState = False
+    Config.IntervalFreezing = 0
+    Config.N_IntervalFreezing = 0
+    Config.N_OpenArm = 0
+    Config.N_ClosedArm = 0
+    Config.N_Center = 0
+    Config.N_NoseOutside = 0
+    Config.T_NoseOutside = 0
+    Config.T_OpenArm = 0
+    Config.T_ClosedArm = 0
+    Config.T_Center = 0
 
 # Write results into txt file
 def writeFile():
@@ -189,5 +205,45 @@ def writeFile():
             file.write('\n')
             file.write('Number of Interactions with Second Object: ' + str(Config.N_OBJ_2) + ' time')
 
+    if Config.Freeze:
+        #Frames total was considered for two points, so it needs to be divided by two
+        Config.freezing_frames_total = Config.freezing_frames_total / 2
+        #Then, we get the frame rate of the video and divide it again to get the time in seconds
+        TimeinFreezeState = Config.freezing_frames_total / Config.framerate
+        file.write('--- Freezing State Detection ---')
+        file.write('\n')
+        file.write('Number of Freezing: ' + str(Config.N_Freezing))
+        file.write('\n')
+        file.write('Time in Freeze State: ' + str(TimeinFreezeState) + ' seconds')
+        file.write('\n')
+        file.write('Number of Interval Freezing: ' + str(Config.N_IntervalFreezing))
+
+    if Config.EPM:
+        #Calculate the time at each place by dividing the number of frames by the framerate of the video
+
+        TimeinOpenArm = Config.T_OpenArm / Config.framerate
+        TimeinClosedArm = Config.T_ClosedArm / Config.framerate
+        TimeinCenter = Config.T_Center / Config.framerate
+        TimeNoseOutside = Config.T_NoseOutside / Config.framerate
+
+        file.write('--- Elevated Plus Maze ---')
+        file.write('\n')
+        file.write('Number of Entries at Open Arm: ' + str(Config.N_OpenArm))
+        file.write('\n')
+        file.write('Number of Entries at Closed Arm: ' + str(Config.N_ClosedArm))
+        file.write('\n')
+        file.write('Number of Entries at Center: ' + str(Config.N_Center))
+        file.write('\n')
+        file.write('Number of Times with the Nose Outside: ' + str(Config.N_NoseOutside))
+        file.write('\n')
+        file.write('Time at Open Arm: ' + str(TimeinOpenArm) + 'seconds')
+        file.write('\n')
+        file.write('Time at Closed Arm: ' + str(TimeinClosedArm) + 'seconds')
+        file.write('\n')
+        file.write('Time at Center: ' + str(TimeinCenter) + 'seconds')
+        file.write('\n')
+        file.write('Time with nose outside: ' + str(TimeNoseOutside) + 'seconds')
+
     print("File created :", file.name)
+    ResetValues()
     file.close

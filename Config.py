@@ -149,6 +149,9 @@ CreateLocomotionGraph = False
 DualZone = False
 Interaction = False
 SingleVideo = False
+Freeze = False
+CropImage = False
+EPM = False
 
 def resetvalues():
     r = 0
@@ -189,17 +192,50 @@ def resetvalues():
     Zone11E = 0
     Zone12E = 0
 
+#Freezing Variables
+global freezing_frames, N_Freezing, freezing_frames_total, FreezeState
+freezing_frames = 0
+N_Freezing = 0
+freezing_frames_total = 0
+FreezeState = False
+IntervalFreezing = 0
+N_IntervalFreezing = 0
+
+#EPM Variables
+global EPM_Rectangles, N_OpenArm, N_ClosedArm, N_NoseOutside
+EPM_Rectangles = []
+#Entry (N)
+N_OpenArm = 0
+N_ClosedArm = 0
+N_NoseOutside = 0
+N_Center = 0
+#Time (T)
+T_OpenArm = 0
+T_ClosedArm = 0
+T_Center = 0
+T_NoseOutside = 0
+T_NoseInside = 0
+#State (S)
+S_OpenArm = False
+S_ClosedArm = False
+S_Center = False
+S_NoseOutside = False
+#No Interval Time at each Zone (IT)
+IT_OpenArm = 0
+IT_ClosedArm = 0
+IT_Center = 0
+
 #First the remaining variables will be set, using the acquired values by user input
 def setglobalvariables(values):
     global modelpath, videopath, projectfolder, sample, cap, framerate, w, h, resolution, image_nl, img, videopath, video_name
 
-
-
-
+    #Locations
     modelpath = values['-ModelPB-']
     videopath = values['-VideoFile-']
     projectfolder = values['-Folder-']
     sample = values['-Sample-']
+
+    #Data from video for selection
     cap = cv2.VideoCapture(videopath)
     framerate = round(cap.get(5), 2)
     w = int(cap.get(3))

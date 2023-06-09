@@ -38,6 +38,8 @@ def main():
     layout = [[sg.Text('Select the Model PB')],
               [sg.InputText(size=(50, 1), key='-ModelPB-'), sg.FileBrowse()],
               [sg.Text('Select the Video or Folder for Analysis')],
+              # The line down here is from the third method, if that is not used, delete this line
+              # [sg.InputText(size=(50, 1), key='-VideoFile-'), sg.FileBrowse(file_types=(("Video Files", ".mp4;.avi"),), target='-VideoFile-FileBrowse-', enable_events=True), sg.FolderBrowse(target='-VideoFile-FolderBrowse-', enable_events=True)],
               [sg.InputText(size=(50, 1), key='-VideoFile-'), sg.FileBrowse(file_types=(("Video Files", "*.mp4;*.avi"),), target='-VideoFile-', enable_events=True), sg.FolderBrowse(target='-VideoFile-', enable_events=True)],
               [sg.Text('Analysis Folder')],
               [sg.InputText(size=(50, 1), key='-Folder-'), sg.FolderBrowse()],
@@ -89,7 +91,8 @@ def main():
         if event in (sg.WIN_CLOSED, 'Exit'):
             break
 
-        #Check if it's only one video or folder
+        # This method is bugging the first button for some reason, no idea why. (First Method)
+        # Check if it's only one video or folder
         selected_path = values['-VideoFile-']
         if selected_path:
             if os.path.isfile(selected_path):
@@ -97,6 +100,31 @@ def main():
             elif os.path.isdir(selected_path):
                 # Analyze all video files in the selected folder
                 Config.SingleVideo = False
+
+        # (Second Method)
+        # Check if it's only one video or folder, adapted this because the code above was bugging the TrackZones button for some reason
+        # If there is bugs related to this event, then is probably here, replace with the code above and find another way to fix the problem
+        # Update for this, this event is not being fired, so I going to try another method
+        # elif event == '-VideoFile-':
+        #     print("At event video file")
+        #     if values['-VideoFile-']:
+        #         if os.path.isfile(values['-VideoFile-']):
+        #             Config.SingleVideo - True
+        #             print('single video true')
+        #         elif os.path.isdir(values['-VideoFile-']):
+        #             print('single video false')
+        #             Config.SingleVideo = False
+
+        # (Third Method)
+        # this is the third method, delete the ones above and submit before sending it to the main branch
+        # It's not working as well
+        # elif event == '-VideoFile-FileBrowse-':
+        #     Config.SingleVideo - True
+        #
+        # elif event == '-VideoFile-FolderBrowse-':
+        #     Config.SingleVideo = False
+
+
 
         #First button logic
         elif event == '-TrackZones?-':  # if the graphical button that changes images

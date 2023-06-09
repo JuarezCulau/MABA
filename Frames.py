@@ -20,12 +20,17 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 """
+import ast
 import os
 import cv2
+import numpy as np
+
 import Config
 import GUI
 from sys import getsizeof
 import Analysis
+import CropImage
+import EPM
 
 #The analysis is made in cycles.
 #Usually tensorflow is loaded for each frame, as a unique session. I am not using that way because it takes too long to load a new session each time for each frame
@@ -36,6 +41,7 @@ import Analysis
 #This is not a problem if your video has low resolution or if it's not that long, but if you have great resolution and or hours of video, then it would require too much video memory.
 #So we extract the frames in cycles, reducing the number of time a session is loaded from each frame to once each 2k frames or something close to that
 #You can also increase that number if you have memory enough and want to save a few seconds
+import Locomotion
 import NOR
 import Zones
 
@@ -159,11 +165,35 @@ def ExtractCoordinatestxt(video_name):
         NOR.OBJ2_QY2 = convert_to_int(variables.get("OBJ2_QY2"))
 
         #Locomotion Graph ROI Coordinates
-        Config.ER_QX1 = variables.get("ER_QX1")
-        Config.ER_QX2 = variables.get("ER_QX2")
-        Config.ER_QY1 = variables.get("ER_QY1")
-        Config.ER_QY2 = variables.get("ER_QY2")
+        Locomotion.ER_QX1 = variables.get("ER_QX1")
+        Locomotion.ER_QX2 = variables.get("ER_QX2")
+        Locomotion.ER_QY1 = variables.get("ER_QY1")
+        Locomotion.ER_QY2 = variables.get("ER_QY2")
 
+        #Crop Image ROI Coordinates
+        CropImage.y_start = convert_to_int(variables.get("y_start"))
+        CropImage.x_start = convert_to_int(variables.get("x_start"))
+        CropImage.y_end = convert_to_int(variables.get("y_end"))
+        CropImage.x_end = convert_to_int(variables.get("x_end"))
+
+        #EPM Zones Coordinates
+        if Config.EPM:
+            #It's not possible to store UMat, so I am saving the Nump Arrays in the txt file, then calling a function that is going to convert into UMAT
+            # EPM.polygon_op1 = np.fromstring(variables.get("polygon_op1"))
+            # EPM.polygon_op2 = np.fromstring(variables.get("polygon_op2"))
+            # EPM.polygon_c1 = np.fromstring(variables.get("polygon_c1"))
+            # EPM.polygon_c2 = np.fromstring(variables.get("polygon_c2"))
+            # EPM.polygon_center = np.fromstring(variables.get("polygon_center"))
+
+            EPM.p_op1 = ast.literal_eval(variables.get("p_op1"))
+            EPM.p_op2 = ast.literal_eval(variables.get("p_op2"))
+            EPM.p_c1 = ast.literal_eval(variables.get("p_c1"))
+            EPM.p_c2 = ast.literal_eval(variables.get("p_c2"))
+            EPM.p_center = ast.literal_eval(variables.get("p_center"))
+
+
+            #Convert the Nump Array into UMat
+            EPM.GenerateUMat()
 
 def extractframes():
     codec = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
@@ -183,14 +213,28 @@ def extractframes():
 
                 break
 
-            if (getsizeof(Config.RawImages) <= 20000):
-                print('appending')
-                Config.RawImages.append(image_np)
+            if Config.CropImage:
+                # Crop the frame using the ROI coordinates and append the cropped frame to the list of cropped frames
+                roi_frame = image_np[CropImage.y_start:CropImage.y_end, CropImage.x_start:CropImage.x_end]
+                if (getsizeof(Config.RawImages) <= 20000):
+                    print('appending')
+                    Config.RawImages.append(roi_frame)
+
+                else:
+                    #LastFrame = (cap.get(1))
+                    Config.NoMoreFrames = False
+                    Analysis.RunSess(Config.NoMoreFrames, codec, out)
 
             else:
-                #LastFrame = (cap.get(1))
-                Config.NoMoreFrames = False
-                Analysis.RunSess(Config.NoMoreFrames, codec, out)
+                if (getsizeof(Config.RawImages) <= 20000):
+                    print('appending')
+                    Config.RawImages.append(image_np)
+
+                else:
+                    # LastFrame = (cap.get(1))
+                    Config.NoMoreFrames = False
+                    Analysis.RunSess(Config.NoMoreFrames, codec, out)
+
 
         #Once there is no more frames, RunSess again with the remaining frames and and set "NoMoreFrames" to True
         Config.NoMoreFrames = True
@@ -198,7 +242,6 @@ def extractframes():
 
     #if the coordinates were extracted from multiple videos, a txt file was generated and the coordinates are loaded here for each analyzed video
     else:
-
 
         for video_name in os.listdir(Config.videopath):
             if video_name.endswith(('.mp4', '.avi')):
@@ -214,9 +257,13 @@ def extractframes():
                 Config.img.fill(255)
                 Config.video_name = video_name
 
-                out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
-
                 ExtractCoordinatestxt(video_name)
+
+                if Config.CropImage:
+                    # Initialize ROI resolution based on the new resolution (if it was selected
+                    Config.resolution = (CropImage.x_end - CropImage.x_start, CropImage.y_end - CropImage.y_start)
+
+                out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
 
                 # this loop if for the cycles described above. RunSess is called inside the loop so that I don't need to set the exact frame each cycle, it only keeps going from where it stopped
                 while (Config.cap.isOpened()):
@@ -228,14 +275,35 @@ def extractframes():
 
                         break
 
-                    if (getsizeof(Config.RawImages) <= 20000):
-                        print('appending')
-                        Config.RawImages.append(image_np)
+                    if Config.CropImage:
+
+                        # Crop the frame using the ROI coordinates and append the cropped frame to the list of cropped frames
+                        roi_frame = image_np[CropImage.y_start:CropImage.y_end, CropImage.x_start:CropImage.x_end]
+
+                        #Set the resolution once again since, this time to the same of the ROI frame
+                        #Config.resolution = roi_frame.shape[1], roi_frame.shape[0]
+                        #out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
+
+                        if (getsizeof(Config.RawImages) <= 20000):
+                            print('appending')
+                            Config.RawImages.append(roi_frame)
+
+                        else:
+                            # LastFrame = (cap.get(1))
+                            Config.NoMoreFrames = False
+                            Analysis.RunSess(Config.NoMoreFrames, codec, out)
 
                     else:
-                        # LastFrame = (cap.get(1))
-                        Config.NoMoreFrames = False
-                        Analysis.RunSess(Config.NoMoreFrames, codec, out)
+
+                        if (getsizeof(Config.RawImages) <= 20000):
+                            print('appending')
+                            Config.RawImages.append(image_np)
+
+                        else:
+                            # LastFrame = (cap.get(1))
+                            Config.NoMoreFrames = False
+                            Analysis.RunSess(Config.NoMoreFrames, codec, out)
+
 
                 # Once there is no more frames, RunSess again with the remaining frames and and set "NoMoreFrames" to True
                 Config.NoMoreFrames = True
