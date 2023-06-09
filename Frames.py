@@ -20,8 +20,11 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 """
+import ast
 import os
 import cv2
+import numpy as np
+
 import Config
 import GUI
 from sys import getsizeof
@@ -176,11 +179,18 @@ def ExtractCoordinatestxt(video_name):
         #EPM Zones Coordinates
         if Config.EPM:
             #It's not possible to store UMat, so I am saving the Nump Arrays in the txt file, then calling a function that is going to convert into UMAT
-            EPM.polygon_op1 = convert_to_int(variables.get("polygon_op1"))
-            EPM.polygon_op2 = convert_to_int(variables.get("polygon_op2"))
-            EPM.polygon_c1 = convert_to_int(variables.get("polygon_c1"))
-            EPM.polygon_c2 = convert_to_int(variables.get("polygon_c2"))
-            EPM.polygon_center = convert_to_int(variables.get("polygon_center"))
+            # EPM.polygon_op1 = np.fromstring(variables.get("polygon_op1"))
+            # EPM.polygon_op2 = np.fromstring(variables.get("polygon_op2"))
+            # EPM.polygon_c1 = np.fromstring(variables.get("polygon_c1"))
+            # EPM.polygon_c2 = np.fromstring(variables.get("polygon_c2"))
+            # EPM.polygon_center = np.fromstring(variables.get("polygon_center"))
+
+            EPM.p_op1 = ast.literal_eval(variables.get("p_op1"))
+            EPM.p_op2 = ast.literal_eval(variables.get("p_op2"))
+            EPM.p_c1 = ast.literal_eval(variables.get("p_c1"))
+            EPM.p_c2 = ast.literal_eval(variables.get("p_c2"))
+            EPM.p_center = ast.literal_eval(variables.get("p_center"))
+
 
             #Convert the Nump Array into UMat
             EPM.GenerateUMat()
