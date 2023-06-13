@@ -165,10 +165,10 @@ def ExtractCoordinatestxt(video_name):
         NOR.OBJ2_QY2 = convert_to_int(variables.get("OBJ2_QY2"))
 
         #Locomotion Graph ROI Coordinates
-        Locomotion.ER_QX1 = variables.get("ER_QX1")
-        Locomotion.ER_QX2 = variables.get("ER_QX2")
-        Locomotion.ER_QY1 = variables.get("ER_QY1")
-        Locomotion.ER_QY2 = variables.get("ER_QY2")
+        Locomotion.ER_QX1 = convert_to_int(variables.get("ER_QX1"))
+        Locomotion.ER_QX2 = convert_to_int(variables.get("ER_QX2"))
+        Locomotion.ER_QY1 = convert_to_int(variables.get("ER_QY1"))
+        Locomotion.ER_QY2 = convert_to_int(variables.get("ER_QY2"))
 
         #Crop Image ROI Coordinates
         CropImage.y_start = convert_to_int(variables.get("y_start"))
