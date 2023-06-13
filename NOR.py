@@ -93,6 +93,7 @@ def ObjectSelection():
 # The threshold is being set at 0.8, I recommend to use a higher value if you have trained a new model with your own images and with good resolution
 #You can also decrease the threshold, but I don't recommend.
 def SpecificObjectSelection():
+    print('58063865036')
     OBJ = cv2.selectROIs("Select the Objects, press 'Enter' after selecting the first one, 'Esc' After selecting the second", Config.image_nl, False)
     global OBJ1_X2, OBJ1_Y2, OBJ1_1, OBJ1_2, OBJ1_3, OBJ1_4, OBJ1_QX1, OBJ1_QX2, OBJ1_QY1, OBJ1_QY2
     global OBJ2_X2, OBJ2_Y2, OBJ2_1, OBJ2_2, OBJ2_3, OBJ2_4, OBJ2_QX1, OBJ2_QX2, OBJ2_QY1, OBJ2_QY2
