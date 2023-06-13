@@ -33,8 +33,15 @@ import Analysis
 import Zones
 import NOR
 import Locomotion
+import CropImage
+import EPM
 
-module_names = ['Locomotion', 'Config', 'Zones', 'NOR']
+module_names = ['Locomotion', 'Config', 'Zones', 'NOR', 'CropImage', 'EPM']
+
+#Reset values from one selection to the other if needed
+def reset_values():
+    if Config.EPM:
+        Config.EPM_Rectangles.clear()
 
 def get_variables_from_module(module):
     module_variables = {}
@@ -56,7 +63,6 @@ def get_variables_from_modules(video_name):
             module = sys.modules[module_name]
             module_variables = get_variables_from_module(module)
             variables[module_name] = module_variables
-    #print(variables)
 
     ApparatusCoordinates = str(Config.projectfolder) + '/' + "info_" + str(video_name) + ".txt"
     with open(ApparatusCoordinates, 'w') as file:
@@ -77,9 +83,15 @@ def MultiExtraction():
             w = int(Config.cap.get(3))
             h = int(Config.cap.get(4))
             Config.resolution = (w, h)
+
             ret, Config.image_nl = Config.cap.read()
 
             # Create logic to extract the coordinates of each video first
+            if Config.CropImage:
+                CropImage.CropForAnalysis()
+
+            if Config.EPM:
+                EPM.EPM_Selection()
 
             if Config.TrackZones:
                 Zones.SelectZones()
@@ -99,6 +111,8 @@ def MultiExtraction():
             print('Writing Coordinates into TxT')
 
             get_variables_from_modules(video_name)
+
+            reset_values()
 
     print('load model extract frames call')
     Frames.extractframes()

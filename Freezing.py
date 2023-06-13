@@ -32,6 +32,15 @@ def calculate_distance(coord1, coord2):
     # Calculate Euclidean distance between two coordinates
     return np.sqrt((coord2[0] - coord1[0])**2 + (coord2[1] - coord1[1])**2)
 
+def nose_movement(coordinates, threshold_distance):
+    distance = calculate_distance(coordinates[0], coordinates[1])
+
+    if not distance <= threshold_distance:
+        # If the mouse starts moving, reset the freezing_frames counter
+        Config.freezing_frames = 0
+
+    return Config.freezing_frames
+
 def calculate_freezing_time(coordinates, threshold_distance):
 
     distance = calculate_distance(coordinates[0], coordinates[1])

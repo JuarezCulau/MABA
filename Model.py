@@ -23,12 +23,14 @@ under the License.
 
 import tensorflow as tf
 import Config
+import EPM
 import GUI
 import Frames
 import Zones
 import NOR
 import Locomotion
 import MultiSelection
+import CropImage
 
 
 #Load frozen tensorflow model selected by user
@@ -54,6 +56,12 @@ def loadModel():
     #Most of the next functions are optional, selected by the user before pressing "Run"
     #For that reason, the order will vary according to what the user selected.
     if Config.SingleVideo:
+        if Config.CropImage:
+            CropImage.CropForAnalysis()
+
+        if Config.EPM:
+            EPM.EPM_Selection()
+
         if Config.TrackZones:
             Zones.SelectZones()
 
