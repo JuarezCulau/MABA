@@ -21,7 +21,6 @@ specific language governing permissions and limitations
 under the License.
 """
 import os
-
 import PySimpleGUI as sg
 import tensorflow as tf
 import cv2
@@ -29,7 +28,7 @@ import numpy as np
 import sys
 import time
 from io import StringIO
-import Config
+from data_processing.frames import Config
 
 #The GUI (Using PySimpleGUI)
 
@@ -159,8 +158,6 @@ def main():
             Config.setglobalvariables(values)
 
     window.close()
-
-
 
 if __name__ == '__main__':
     # The base64 strings for the button images
