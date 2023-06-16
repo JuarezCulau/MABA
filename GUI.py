@@ -37,8 +37,6 @@ def main():
     layout = [[sg.Text('Select the Model PB')],
               [sg.InputText(size=(50, 1), key='-ModelPB-'), sg.FileBrowse()],
               [sg.Text('Select the Video or Folder for Analysis')],
-              # The line down here is from the third method, if that is not used, delete this line
-              # [sg.InputText(size=(50, 1), key='-VideoFile-'), sg.FileBrowse(file_types=(("Video Files", ".mp4;.avi"),), target='-VideoFile-FileBrowse-', enable_events=True), sg.FolderBrowse(target='-VideoFile-FolderBrowse-', enable_events=True)],
               [sg.InputText(size=(50, 1), key='-VideoFile-'), sg.FileBrowse(file_types=(("Video Files", "*.mp4;*.avi"),), target='-VideoFile-', enable_events=True), sg.FolderBrowse(target='-VideoFile-', enable_events=True)],
               [sg.Text('Analysis Folder')],
               [sg.InputText(size=(50, 1), key='-Folder-'), sg.FolderBrowse()],
@@ -76,6 +74,24 @@ def main():
               [sg.Text('Locomotion Graph')],
               [sg.Text('Off'),
                sg.Button(image_data=toggle_btn_off, key='-LocomotionGraph?-',
+                         button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                         metadata=False),
+               sg.Text('On')],
+              [sg.Text('Freeze State')],
+              [sg.Text('Off'),
+               sg.Button(image_data=toggle_btn_off, key='-FreezeState?-',
+                         button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                         metadata=False),
+               sg.Text('On')],
+              [sg.Text('Crop Image (Freeze)')],
+              [sg.Text('Off'),
+               sg.Button(image_data=toggle_btn_off, key='-CropImage?-',
+                         button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                         metadata=False),
+               sg.Text('On')],
+              [sg.Text('Elevated Plus Maze')],
+              [sg.Text('Off'),
+               sg.Button(image_data=toggle_btn_off, key='-EPM?-',
                          button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
                          metadata=False),
                sg.Text('On')],
@@ -143,6 +159,33 @@ def main():
             Config.CreateLocomotionGraph = True
         else:
             Config.CreateLocomotionGraph = False
+
+        # Seventh Button logic
+        if event == '-FreezeState?-':  # if the graphical button that changes images
+            window['-FreezeState?-'].metadata = not window['-FreezeState?-'].metadata
+            window['-FreezeState?-'].update(image_data=toggle_btn_on if window['-FreezeState?-'].metadata else toggle_btn_off)
+        if window['-FreezeState?-'].metadata:
+            Config.Freeze = True
+        else:
+            Config.Freeze = False
+
+        # Eighth Button logic
+        if event == '-CropImage?-':  # if the graphical button that changes images
+            window['-CropImage?-'].metadata = not window['-CropImage?-'].metadata
+            window['-CropImage?-'].update(image_data=toggle_btn_on if window['-CropImage?-'].metadata else toggle_btn_off)
+        if window['-CropImage?-'].metadata:
+            Config.CropImage = True
+        else:
+            Config.CropImage = False
+
+        # Ninth Button logic
+        if event == '-EPM?-':  # if the graphical button that changes images
+            window['-EPM?-'].metadata = not window['-EPM?-'].metadata
+            window['-EPM?-'].update(image_data=toggle_btn_on if window['-EPM?-'].metadata else toggle_btn_off)
+        if window['-EPM?-'].metadata:
+            Config.EPM = True
+        else:
+            Config.EPM = False
 
         # Check if it's only one video or folder
         selected_path = values['-VideoFile-']
