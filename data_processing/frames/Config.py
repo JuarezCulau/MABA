@@ -27,7 +27,9 @@ import numpy as np
 import GUI
 from data_load import Model
 
-global Nosex, Nosey, Headx, Heady, L_Earx, L_Eary, Body1x, Body1y, CenterBodyx, CenterBodyy, Body2x, Body2y, tail1x, tail1y, tail2x, tail2y, tail3x, tail3y, tail4x, tail4y
+global confiability_threshold, Nosex, Nosey, Headx, Heady, L_Earx, L_Eary, Body1x, Body1y, CenterBodyx, CenterBodyy, Body2x, Body2y, tail1x, tail1y, tail2x, tail2y, tail3x, tail3y, tail4x, tail4y
+
+confiability_threshold = 0.95
 
 #Coordinates arrays
 #All the tracked points are stored here, if you want to add or delete a point, select that point and remove every part that use the removed array
@@ -234,6 +236,7 @@ def setglobalvariables(values):
     videopath = values['-VideoFile-']
     projectfolder = values['-Folder-']
     sample = values['-Sample-']
+    sample = values['-threshold-']
 
     #Data from video for selection
     cap = cv2.VideoCapture(videopath)

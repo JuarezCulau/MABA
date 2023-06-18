@@ -100,6 +100,8 @@ def main():
               [sg.InputText(size=(50, 1), key='-Folder-'), sg.FolderBrowse()],
               [sg.Text('Name Your Sample')],
               [sg.InputText(key='-Sample-')],
+              [sg.Text('Confiability Threshold')],
+              [sg.InputText(key='-threshold-')],
 
               [sg.Text('Analysis Options', font='Helvetica 12 bold')],
               [sg.Column(buttons_layout, size=(700, 300), scrollable=True, vertical_scroll_only=True, key='-BUTTON_COLUMN-')],

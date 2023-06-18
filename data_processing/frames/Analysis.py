@@ -117,7 +117,7 @@ def RunSess(NoMoreFrames, codec, out):
             Tail4_T = (trackerSess[10])[2]
 
             #this will be the Threshold value, between 0 and 1.
-            Threshold = 0.95
+            Threshold = Config.confiability_threshold
 
             #here we extract the X and Y coordinate from each tracked point. The threshold have no function in this part.
             Config.Nosex.append((trackerSess[0])[1])
