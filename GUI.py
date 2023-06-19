@@ -89,6 +89,12 @@ def main():
                    button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
                    metadata=False),
          sg.Text('On')],
+        [sg.Text('Cage')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-Cage?-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
     ]
 
     global TrackZones, NovelObject, CropRon, CreateLocomotionGraph, DualZone, Interaction
@@ -196,6 +202,15 @@ def main():
             Config.EPM = True
         else:
             Config.EPM = False
+
+        # Tenth Button logic
+        if event == '-Cage?-':  # if the graphical button that changes images
+            window['-Cage?-'].metadata = not window['-Cage?-'].metadata
+            window['-Cage?-'].update(image_data=toggle_btn_on if window['-Cage?-'].metadata else toggle_btn_off)
+        if window['-Cage?-'].metadata:
+            Config.Cage = True
+        else:
+            Config.Cage = False
 
         # Check if it's only one video or folder
         selected_path = values['-VideoFile-']

@@ -245,6 +245,28 @@ def writeFile():
         file.write('\n')
         file.write('Time with nose outside: ' + str(TimeNoseOutside) + 'seconds')
 
+    if Config.Cage:
+        #Calculate the time at each place by dividing the number of frames by the framerate of the video
+
+        TimeObj1 = Config.T_Obj1 / Config.framerate
+        TimeObj2 = Config.T_Obj2 / Config.framerate
+        TimeObj3 = Config.T_Obj3 / Config.framerate
+
+        file.write('--- Cage ---')
+        file.write('\n')
+        file.write('Number of Entries at Object 1: ' + str(Config.N_OBJ_1))
+        file.write('\n')
+        file.write('Number of Entries at Object 2: ' + str(Config.N_OBJ_2))
+        file.write('\n')
+        file.write('Number of Entries at Object 3: ' + str(Config.N_OBJ_3))
+        file.write('\n')
+
+        file.write('Time at Object 1: ' + str(TimeObj1) + 'seconds')
+        file.write('\n')
+        file.write('Time at Object 2: ' + str(TimeObj2) + 'seconds')
+        file.write('\n')
+        file.write('Time at Object 3: ' + str(TimeObj3) + 'seconds')
+
     print("File created :", file.name)
     ResetValues()
     file.close

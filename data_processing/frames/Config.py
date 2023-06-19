@@ -154,6 +154,7 @@ SingleVideo = False
 Freeze = False
 CropImage = False
 EPM = False
+Cage = False
 
 def resetvalues():
     r = 0
@@ -226,6 +227,22 @@ S_NoseOutside = False
 IT_OpenArm = 0
 IT_ClosedArm = 0
 IT_Center = 0
+
+#Cage Global Variables
+global Cage_Rectangles
+Cage_Rectangles = []
+#Entry (N)
+N_Obj1 = 0
+N_Obj2 = 0
+N_Obj3 = 0
+#Time (T)
+T_Obj1 = 0
+T_Obj2 = 0
+T_Obj3 = 0
+#State (S)
+S_Obj1 = 0
+S_Obj2 = 0
+S_Obj3 = 0
 
 #First the remaining variables will be set, using the acquired values by user input
 def setglobalvariables(values):
