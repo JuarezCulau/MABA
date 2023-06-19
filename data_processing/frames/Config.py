@@ -236,7 +236,7 @@ def setglobalvariables(values):
     videopath = values['-VideoFile-']
     projectfolder = values['-Folder-']
     sample = values['-Sample-']
-    sample = values['-threshold-']
+    sample = float(values['-threshold-'])
 
     #Data from video for selection
     cap = cv2.VideoCapture(videopath)
