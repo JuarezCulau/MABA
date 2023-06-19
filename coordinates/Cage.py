@@ -126,7 +126,7 @@ def draw_polygons(image, polygons):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-def EPM_Selection():
+def Cage_Selection():
     # Read the image
     image = Config.image_nl
 

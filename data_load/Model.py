@@ -31,6 +31,7 @@ from coordinates import NOR
 from coordinates import Locomotion
 from coordinates import EPM
 from coordinates import CropImage
+from coordinates import Cage
 
 
 #Load frozen tensorflow model selected by user
@@ -56,6 +57,9 @@ def loadModel():
     #Most of the next functions are optional, selected by the user before pressing "Run"
     #For that reason, the order will vary according to what the user selected.
     if Config.SingleVideo:
+        if Config.Cage:
+            Cage.Cage_Selection()
+
         if Config.CropImage:
             CropImage.CropForAnalysis()
 
