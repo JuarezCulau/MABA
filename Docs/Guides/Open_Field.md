@@ -1,7 +1,7 @@
 # Open Field Analysis
 This guide provides instructions on how to use the Open Field analysis feature. Open Field offers three useful options for your analysis: Track Multiple Zones, Dual Zones, and Locomotion Graph. Please note that this guide covers Track Multiple Zones and Dual Zones, while the Locomotion Graph will be explained in a separate guide.
 
-#Track Multiple Zones
+# Track Multiple Zones
 The Track Multiple Zones option allows you to track zones selected by the user. Follow these steps to utilize this feature:
 
 1. Once you have selected the Track Multiple Zones option and clicked "Run," the first frame of your video will appear. Pay attention to the title displayed.
@@ -12,7 +12,7 @@ The Track Multiple Zones option allows you to track zones selected by the user. 
 
 After completing these steps, the analysis will begin. Wait until the analysis is finished.
 
-#Dual Zones
+# Dual Zones
 The Dual Zones option provides the same analysis values as Track Multiple Zones but focuses on the central and peripheral zones. Follow these steps to use Dual Zones:
 
 1. Select the Dual Zones option and click "Run."
