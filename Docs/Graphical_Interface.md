@@ -10,8 +10,8 @@ Before starting the analysis, you need to choose a model for your videos. Select
 
 Once you have chosen the model, it's time to select the video(s) you want to analyze. You have the following options:
 
-**Single Analysis**: If you want to analyze a single video, use the left button to select the video file.
-**Multi-Analysis**: If you have a folder containing multiple videos that you want to analyze, use the right button to select the folder.
+**Single Analysis**: If you want to analyze a single video, use the left button to select the video file.-
+**Multi-Analysis**: If you have a folder containing multiple videos that you want to analyze, use the right button to select the folder.-
 
 # Step 3: Selecting the Analysis Folder
 
