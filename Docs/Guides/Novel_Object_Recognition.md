@@ -2,18 +2,18 @@
 
 This guide provides instructions on how to perform novel object recognition analysis using the MABA tool. There are three options available for this analysis. Please follow the steps below to utilize these options effectively:
 
-#Option 1: Novel Object Recognition
+# Option 1: Novel Object Recognition
 The "Novel Object Recognition" function is the main feature used to detect the time the mice spend close to each object. This option allows you to analyze the proximity of the mice to the objects.
 
-#Option 2: Crop Object Recognition
+# Option 2: Crop Object Recognition
 The "Crop Object Recognition" option provides the ability to generate an output video containing only the moments when the mice are close to the objects. It is highly recommended to use this option as it facilitates result validation, if needed. However, this option must be selected together with the "Novel Object Recognition" option to work properly.
 
-#Option 3: Detect Interaction Novel Object Recognition
+# Option 3: Detect Interaction Novel Object Recognition
 The "Detect Interaction Novel Object Recognition" option focuses on detecting interactions between the mice and the objects by utilizing the nose point of the mice.
 
 When performing novel object recognition analysis using MABA, it is recommended to select all three options mentioned above.
 
-Analysis Steps:
+# Analysis Steps:
 Select the files you want to analyze in the MABA tool.
 
 Press the "Run" button to initiate the analysis. A window will appear with specific instructions based on the options chosen.
