@@ -32,7 +32,8 @@ from coordinates import Locomotion
 from coordinates import Cage
 from data_load import Write
 from data_load import Model
-from data_processing import Freezing
+from data_processing import Freezing, ZScoreMap
+
 
 def ClearArrays():
     Config.RawImages.clear()
@@ -887,9 +888,14 @@ def RunSess(NoMoreFrames, codec, out):
 
         #if there is no more frames, then it will clear the RawImages one last time and call the next function "WriteFile"
         if NoMoreFrames:
+            #Check if it should generate a ZcoreMap
+            if Config.Zscore:
+                ZScoreMap.generate_zscore_map()
+
             ClearArrays()
             out.release
             print('Video Created')
+
             Write.writeFile()
 
         #If there is more frames, then it will clear the RawImages and go back into the extractframes loop until there is no more frames.

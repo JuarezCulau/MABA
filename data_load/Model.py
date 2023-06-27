@@ -75,7 +75,8 @@ def loadModel():
         if Config.NovelObject:
             NOR.ObjectSelection()
 
-        if Config.CreateLocomotionGraph:
+        #Yale branch only, using the same function to generate the ROI for the Zscore Map
+        if Config.CreateLocomotionGraph or Config.Zscore:
             Locomotion.CropForLocomotionGraph()
 
         if not Config.TrackZones and not Config.NovelObject and not Config.DualZone and not Config.CreateLocomotionGraph:

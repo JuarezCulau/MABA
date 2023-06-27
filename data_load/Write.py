@@ -59,7 +59,6 @@ def writeFile():
         Cutimg = Config.img[Locomotion.ER_QY1: Locomotion.ER_QY2, Locomotion.ER_QX1: Locomotion.ER_QX2]
 
         cv2.imwrite(str(Config.projectfolder) + '/Locomotion_' + str(Config.sample) + '_' + str(Config.video_name) + '.jpg', Cutimg)
-        #cv2.imwrite(str(Config.projectfolder) + '/Locomotion_' + str(Config.sample) + '_' + str(Config.video_name) + '.jpg', Config.img)
         print('Locomotion Graph Created!')
 
 #This entire part can be rebuilt with a loop. However, I tested using this method and the loop,

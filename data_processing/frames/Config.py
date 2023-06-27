@@ -155,6 +155,7 @@ Freeze = False
 CropImage = False
 EPM = False
 Cage = False
+Zscore = True
 
 def resetvalues():
     r = 0
