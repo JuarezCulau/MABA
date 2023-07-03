@@ -27,6 +27,7 @@ from data_processing.frames import Frames
 from data_processing.frames import Config
 from data_processing.frames import Analysis
 import numpy as np
+import matplotlib.pyplot as plt
 
 def generate_zscore_map():
     # Calculate mean and standard deviation
@@ -38,20 +39,39 @@ def generate_zscore_map():
     # Create ROI image
     RoiImg = Config.img[Locomotion.ER_QY1: Locomotion.ER_QY2, Locomotion.ER_QX1: Locomotion.ER_QX2]
 
-    # Create z-score map
-    zscore_map = np.zeros_like(RoiImg)
+    # Normalize z-score values to [0, 255]
+    z_x = ((Config.CenterBodyx - mean_x) / std_x + 3) * 42.5  # Adjust the range based on your z-score range
+    z_y = ((Config.CenterBodyy - mean_y) / std_y + 3) * 42.5  # Adjust the range based on your z-score range
 
-    # Iterate over coordinates and z-scores
+    # Determine the size of the z-score map based on the ROI image size
+    map_height, map_width = RoiImg.shape[:2]
+
+    # Create z-score maps for x and y coordinates
+    zscore_map_x = np.zeros((map_height, map_width), dtype=np.uint8)
+    zscore_map_y = np.zeros((map_height, map_width), dtype=np.uint8)
+
+    # Assign z-score values to the maps
+    for x, y, z_x_val, z_y_val in zip(Config.CenterBodyx, Config.CenterBodyy, z_x, z_y):
+        x_coord = int(x - Locomotion.ER_QX1)
+        y_coord = int(y - Locomotion.ER_QY1)
+        zscore_map_x[y_coord, x_coord] = z_x_val
+        zscore_map_y[y_coord, x_coord] = z_y_val
+
+    # Apply colormap to z-score maps
+    zscore_map_x = cv2.applyColorMap(zscore_map_x, cv2.COLORMAP_JET)
+    zscore_map_y = cv2.applyColorMap(zscore_map_y, cv2.COLORMAP_JET)
+
+    # Combine x and y z-score maps
+    zscore_map = cv2.addWeighted(zscore_map_x, 0.5, zscore_map_y, 0.5, 0)
+
+    # Draw circles on z-score map
     for x, y in zip(Config.CenterBodyx, Config.CenterBodyy):
-        z_x = (x - mean_x) / std_x
-        z_y = (y - mean_y) / std_y
+        x_coord = int(x - Locomotion.ER_QX1)
+        y_coord = int(y - Locomotion.ER_QY1)
+        cv2.circle(zscore_map, (x_coord, y_coord), radius=1, color=(0, 0, 255), thickness=4)
 
-        # Convert z-scores to valid color using a colormap
-        colormap = cv2.COLORMAP_JET
-        color = cv2.applyColorMap(np.array([z_x, 0, z_y], dtype=np.uint8), colormap)[0, 0, :]
-
-        # Draw circle on z-score map
-        cv2.circle(zscore_map, (x, y), radius=1, color=color.tolist(), thickness=4)
-
+    # Display the z-score map
+    cv2.imshow("Z-Score Map", zscore_map)
+    cv2.waitKey(0)
     # Save z-score map
     cv2.imwrite(str(Config.projectfolder) + '/zscore_' + str(Config.sample) + '_' + str(Config.video_name) + '.jpg', zscore_map)
