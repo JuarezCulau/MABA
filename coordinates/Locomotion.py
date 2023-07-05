@@ -26,8 +26,10 @@ from coordinates import NOR
 from data_processing.frames import Frames
 from data_processing.frames import Config
 
-#CropForLocomotionGraph creates a image with the entire path of the mice during the video.
-#First it takes the resolution from the video to create a white img and here the aparatus is selected for image cut at the end.
+# Function: generate_locomotion_graph_image
+#
+# Description: This function generates an image representing the complete trajectory of the mice during the video.
+# It retrieves the video's resolution and creates a blank white image with the corresponding dimensions.
 def CropForLocomotionGraph():
     global ER_QX1, ER_QX2, ER_QY1, ER_QY2
     ExperimentROI = cv2.selectROI("(Crop Image for Locomotion Graph) Select the Entire Are of Your Experiment 'Enter'", Config.image_nl, False)

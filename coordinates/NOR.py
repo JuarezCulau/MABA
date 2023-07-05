@@ -26,9 +26,12 @@ from coordinates import Locomotion
 from data_processing.frames import Frames
 from data_processing.frames import Config
 
-#this function will track the mice when he is close to the object but it will not determine interaction,
-# the specific object selection determine interaction but for that, the model must have precision enough to track the nose of the mice in your video
-#I choose the same logic from the trackzones, this time for only two objects, if for some reason there is more objects in your experiment, then expand here!
+# Description: This function tracks the mice when it is in close proximity to an object, but it does not determine interaction.
+# The interaction is determined by the specific object selection. To track the mice's nose accurately in the video, the model
+# needs to have sufficient precision.
+#
+# Approach: The function follows a similar logic as the track_zones function, but in this case, it is designed to track only two objects.
+# If there are more objects in your experiment, you can expand this section accordingly.
 def ObjectSelection():
     RON = cv2.selectROIs("select the area around the objects, press 'Enter' after selecting the first one, 'Esc' After selecting the second", Config.image_nl, False)
     global R1_X2, R1_Y2, R1_1, R1_2, R1_3, R1_4, R1_QX1, R1_QX2, R1_QY1, R1_QY2
@@ -37,8 +40,9 @@ def ObjectSelection():
     R1_X2 = ((RON[0])[0]) + ((RON[0])[2])
     R1_Y2 = ((RON[0])[1]) + ((RON[0])[3])
 
-    # Z is for zone, first number means which zone it is and the second number mean's which coordinate from the zone, there are four in total for each zone
-    #This one retain the value of the four points selected at each zone, I will leave a example of how to use those values below (Example 1)
+    # Description: Z stands for zone. The first number indicates which zone it is, and the second number represents the coordinate within the zone. There are a total of four coordinates for each zone.
+    #
+    # Usage: This variable retains the values of the four points selected for each zone. There is an example (Example 1)
     R1_1 = ((RON[0])[0]), ((RON[0])[1])
     R1_2 = R1_X2, R1_Y2
     R1_3 = ((RON[0])[0]), R1_Y2
@@ -64,7 +68,6 @@ def ObjectSelection():
     R2_X2 = ((RON[1])[0]) + ((RON[1])[2])
     R2_Y2 = ((RON[1])[1]) + ((RON[1])[3])
 
-    # Z is for zone, first nome means which zone it is and the second number mean's which coordinate from the zone, there are four in total for each zone
     R2_1 = ((RON[1])[0]), ((RON[1])[1])
     R2_2 = R2_X2, R2_Y2
     R2_3 = ((RON[1])[0]), R2_Y2
@@ -87,11 +90,9 @@ def ObjectSelection():
             print('object selection extract frames call')
             Frames.extractframes()
 
-#this function will be used to track the close proximity to the object
-#is important to remember that this functio will only work properly if the model has accuracy enough to track the nose of your mice
-#That said, test the model in video or train a new pb model, if you have accuracy to track the nose, then use this function.
-# The threshold is being set at 0.8, I recommend to use a higher value if you have trained a new model with your own images and with good resolution
-#You can also decrease the threshold, but I don't recommend.
+# Description: This function is used to track the close proximity of the object. It's important to note that this function will only work properly if the model has sufficient accuracy to track the nose of the mice.
+#
+# Usage: Before using this function, it is recommended to test the model on a video or train a new model (pb model) to ensure accurate nose tracking. Adjust the threshold value accordingly.
 def SpecificObjectSelection():
     print('58063865036')
     OBJ = cv2.selectROIs("Select the Objects, press 'Enter' after selecting the first one, 'Esc' After selecting the second", Config.image_nl, False)
@@ -101,7 +102,6 @@ def SpecificObjectSelection():
     OBJ1_X2 = ((OBJ[0])[0]) + ((OBJ[0])[2])
     OBJ1_Y2 = ((OBJ[0])[1]) + ((OBJ[0])[3])
 
-    # Z is for zone, first nome means which zone it is and the second number mean's which coordinate from the zone, there are four in total for each zone
     OBJ1_1 = ((OBJ[0])[0]), ((OBJ[0])[1])
     OBJ1_2 = OBJ1_X2, OBJ1_Y2
     OBJ1_3 = ((OBJ[0])[0]), OBJ1_Y2
@@ -117,7 +117,6 @@ def SpecificObjectSelection():
     OBJ2_X2 = ((OBJ[1])[0]) + ((OBJ[1])[2])
     OBJ2_Y2 = ((OBJ[1])[1]) + ((OBJ[1])[3])
 
-    # Z is for zone, first nome means which zone it is and the second number mean's which coordinate from the zone, there are four in total for each zone
     OBJ2_1 = ((OBJ[1])[0]), ((OBJ[1])[1])
     OBJ2_2 = OBJ2_X2, OBJ2_Y2
     OBJ2_3 = ((OBJ[1])[0]), OBJ2_Y2

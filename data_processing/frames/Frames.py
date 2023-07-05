@@ -34,16 +34,6 @@ from coordinates import Locomotion
 from coordinates import NOR
 from coordinates import Zones
 
-#The analysis is made in cycles.
-#Usually tensorflow is loaded for each frame, as a unique session. I am not using that way because it takes too long to load a new session each time for each frame
-#Instead, extractframes stores a chunk of images into a array and then a session is loaded only one time for the entire array.
-#Using that method creates a memory problem.
-#--------------------------
-#Tensors starts to take too much video memory. This can be a problem even with several GPUs.
-#This is not a problem if your video has low resolution or if it's not that long, but if you have great resolution and or hours of video, then it would require too much video memory.
-#So we extract the frames in cycles, reducing the number of time a session is loaded from each frame to once each 2k frames or something close to that
-#You can also increase that number if you have memory enough and want to save a few seconds
-
 def convert_to_int(value):
     return int(value) if value is not None else None
 
@@ -194,15 +184,29 @@ def ExtractCoordinatestxt(video_name):
             #Convert the Nump Array into UMat
             EPM.GenerateUMat()
 
+# The analysis is performed in cycles.
+# Typically, TensorFlow is loaded for each frame as a separate session.
+# However, this approach is time-consuming due to the overhead of loading a new session for each frame.
+# Instead, in the "extractframes" function, a chunk of images is stored in an array, and then a session is loaded only once for the entire array.
+# Although this method helps to optimize the loading time, it can lead to memory issues.
+
+# --------------------------
+# As the analysis progresses, the tensors start consuming a significant amount of video memory. This can become problematic, even when using multiple GPUs.
+# The issue becomes more pronounced when dealing with high-resolution videos or lengthy video footage.
+# To mitigate this, we extract the frames in cycles, reducing the frequency of session loading to once every 2k frames or a similar interval.
+# You can adjust this number based on the available memory and the desired trade-off between video memory usage and processing time.
+# Increasing the interval can save some seconds of processing time if memory is not a constraint.
+
 def extractframes():
     codec = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-    #If the coordinates were extracted from only one video
+    # If the coordinates were extracted from only one video
     if Config.SingleVideo:
-
 
         out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + '.mp4', codec, Config.framerate, Config.resolution)
 
-        #this loop if for the cycles described above. RunSess is called inside the loop so that I don't need to set the exact frame each cycle, it only keeps going from where it stopped
+        # This loop is responsible for implementing the cycles described above.
+        # The "RunSess" function is called inside the loop, eliminating the need to specify the exact frame for each cycle.
+        # Instead, it continues from where it left off in the previous cycle.
         while (Config.cap.isOpened()):
             print('processing frame number: ' + str(Config.cap.get(1)))
             ret, image_np = Config.cap.read()
@@ -220,7 +224,7 @@ def extractframes():
                     Config.RawImages.append(roi_frame)
 
                 else:
-                    #LastFrame = (cap.get(1))
+                    # LastFrame = (cap.get(1))
                     Config.NoMoreFrames = False
                     Analysis.RunSess(Config.NoMoreFrames, codec, out)
 
@@ -235,11 +239,13 @@ def extractframes():
                     Analysis.RunSess(Config.NoMoreFrames, codec, out)
 
 
-        #Once there is no more frames, RunSess again with the remaining frames and and set "NoMoreFrames" to True
+        # Once all frames have been processed in the cycles, the "RunSess" function is called again with the remaining frames.
+        # After this, the variable "NoMoreFrames" is set to True.
         Config.NoMoreFrames = True
         Analysis.RunSess(Config.NoMoreFrames, codec, out)
 
-    #if the coordinates were extracted from multiple videos, a txt file was generated and the coordinates are loaded here for each analyzed video
+    # If the coordinates were extracted from multiple videos, a text file containing the coordinates is generated.
+    # In this part of the code, the coordinates are loaded for each analyzed video, along with their corresponding video data.
     else:
 
         for video_name in os.listdir(Config.videopath):
@@ -259,12 +265,14 @@ def extractframes():
                 ExtractCoordinatestxt(video_name)
 
                 if Config.CropImage:
-                    # Initialize ROI resolution based on the new resolution (if it was selected
+                    # Initialize ROI resolution based on the new resolution (if it was selected)
                     Config.resolution = (CropImage.x_end - CropImage.x_start, CropImage.y_end - CropImage.y_start)
 
                 out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
 
-                # this loop if for the cycles described above. RunSess is called inside the loop so that I don't need to set the exact frame each cycle, it only keeps going from where it stopped
+                # This loop is responsible for implementing the cycles described above.
+                # The "RunSess" function is called inside the loop, eliminating the need to specify the exact frame for each cycle.
+                # Instead, it continues from where it left off in the previous cycle.
                 while (Config.cap.isOpened()):
                     print('processing frame number: ' + str(Config.cap.get(1)))
                     ret, image_np = Config.cap.read()
@@ -276,10 +284,17 @@ def extractframes():
 
                     if Config.CropImage:
 
-                        # Crop the frame using the ROI coordinates and append the cropped frame to the list of cropped frames
+                        # This code snippet is responsible for cropping the frame using the ROI (Region of Interest) coordinates and appending the cropped frame to the list of cropped frames.
+
+                        # The ROI coordinates define the region that needs to be extracted from the frame. The frame is then cropped based on these coordinates, resulting in a smaller region of interest.
+                        # This can be useful for focusing on specific areas or objects within the frame.
+
+                        # The cropped frame is then added to a list of cropped frames, which can be further processed or analyzed as needed.
+
+                        # Note: Make sure that the ROI coordinates are correctly defined to ensure accurate cropping of the frame. Adjust the coordinates according to your requirements.
                         roi_frame = image_np[CropImage.y_start:CropImage.y_end, CropImage.x_start:CropImage.x_end]
 
-                        #Set the resolution once again since, this time to the same of the ROI frame
+                        # In this part of the code, the resolution is set once again, this time to match the resolution of the ROI frame.
                         #Config.resolution = roi_frame.shape[1], roi_frame.shape[0]
                         #out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
 
@@ -303,12 +318,15 @@ def extractframes():
                             Config.NoMoreFrames = False
                             Analysis.RunSess(Config.NoMoreFrames, codec, out)
 
+                # After processing all available frames, the code handles any remaining frames that were not processed in previous cycles.
 
-                # Once there is no more frames, RunSess again with the remaining frames and and set "NoMoreFrames" to True
+                # The RunSess function is called again with the remaining frames as input to ensure their processing.
+
+                # Once all frames have been processed, the "NoMoreFrames" variable is set to True, indicating that there are no more frames left to process in the video.
                 Config.NoMoreFrames = True
                 Analysis.RunSess(Config.NoMoreFrames, codec, out)
 
             Config.resetvalues()
-            #Clear tracked points stored
+            # Clear the stored tracked points.
             for point in Config.TrackedPoints:
                 point.clear()
