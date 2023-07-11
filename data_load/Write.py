@@ -253,11 +253,11 @@ def writeFile():
 
         file.write('--- Cage ---')
         file.write('\n')
-        file.write('Number of Entries at Object 1: ' + str(Config.N_OBJ_1))
+        file.write('Number of Entries at Object 1: ' + str(Config.N_Obj1))
         file.write('\n')
-        file.write('Number of Entries at Object 2: ' + str(Config.N_OBJ_2))
+        file.write('Number of Entries at Object 2: ' + str(Config.N_Obj2))
         file.write('\n')
-        file.write('Number of Entries at Object 3: ' + str(Config.N_OBJ_3))
+        file.write('Number of Entries at Object 3: ' + str(Config.N_Obj3))
         file.write('\n')
 
         file.write('Time at Object 1: ' + str(TimeObj1) + 'seconds')

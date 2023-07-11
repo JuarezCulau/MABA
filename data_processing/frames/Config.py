@@ -155,7 +155,7 @@ Freeze = False
 CropImage = False
 EPM = False
 Cage = False
-Zscore = True
+Zscore = False
 
 def resetvalues():
     r = 0
@@ -244,6 +244,12 @@ T_Obj3 = 0
 S_Obj1 = 0
 S_Obj2 = 0
 S_Obj3 = 0
+# Action time between different objects (ADT)
+Cage_ADT = 0
+# Action Time Between the same object (AST)
+AST_Obj1 = 0
+AST_Obj2 = 0
+AST_Obj3 = 0
 
 #First the remaining variables will be set, using the acquired values by user input
 def setglobalvariables(values):

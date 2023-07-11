@@ -64,8 +64,8 @@ def draw_points(event, x, y, flags, param):
         # If four points are selected, calculate the rectangle coordinates
         if len(points) == 4:
             rect_coordinates = calculate_rectangle_coordinates(points)
-            Config.EPM_Rectangles.append(rect_coordinates)
-            print(Config.EPM_Rectangles)
+            Config.Cage_Rectangles.append(rect_coordinates)
+            print(Config.Cage_Rectangles)
 
             # Clear the points list for the next rectangle
             points.clear()
