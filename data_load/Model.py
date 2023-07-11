@@ -35,10 +35,22 @@ from coordinates import Cage
 
 
 #Load frozen tensorflow model selected by user
-# A default option will be provided, but the recomendation is to train your own model with DeepLabCut and ResNet50.
-#However, if your model was not trained with DeepLabCut, a few modifications here will probably be necessary!
+# Note: It is highly recommended to train your own model using DeepLabCut and ResNet50 for optimal performance.
+# However, if your model was not trained with DeepLabCut, certain modifications in this section might be necessary.
 
 def loadModel():
+    """
+    Description: This function is responsible for loading a pre-trained TensorFlow model into memory.
+
+    Steps:
+    1. The model file specified in `Config.modelpath` is read as a binary file using `tf.io.gfile.GFile`.
+    2. The contents of the model file are parsed into a TensorFlow `GraphDef` object named `graph_def`.
+    3. A new TensorFlow graph is created using `tf.Graph()`, and it becomes the default graph.
+    4. The pre-trained model is imported into the graph using `tf.import_graph_def`.
+    5. The input tensor is obtained from the graph using its name ('Placeholder:0').
+    6. The output tensor is obtained from the graph using its name ('concat_1:0').
+
+    """
     global input, output, graph
     with tf.io.gfile.GFile(Config.modelpath, "rb") as f:
         graph_def = tf.compat.v1.GraphDef()
@@ -55,7 +67,6 @@ def loadModel():
 
 
     #Most of the next functions are optional, selected by the user before pressing "Run"
-    #For that reason, the order will vary according to what the user selected.
     if Config.SingleVideo:
         if Config.Cage:
             Cage.Cage_Selection()
@@ -84,5 +95,4 @@ def loadModel():
             Frames.extractframes()
 
     else:
-        #MultiSelection()
         MultiSelection.MultiExtraction()

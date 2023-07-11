@@ -38,7 +38,7 @@ from coordinates import EPM
 
 module_names = ['Locomotion', 'Config', 'Zones', 'NOR', 'CropImage', 'EPM']
 
-#Reset values from one selection to the other if needed
+# Reset values from one selection to the other if needed
 def reset_values():
     if Config.EPM:
         Config.EPM_Rectangles.clear()
@@ -52,10 +52,10 @@ def get_variables_from_module(module):
                 module_variables[name] = value
     return module_variables
 
-#Once the coordinates were set in MultiExtraction, it comes into here to grab all the global variables including those coordinates of the specific video
-#Those coordinates are stored in a txt file with the same name as the video name
-#Then, it loops back into MultiExtraction for the selection of zones in the next video
-#The stored coordinates are going to be used later on the analysis of each video
+# Once the coordinates are set in MultiExtraction, this section is responsible for capturing all the relevant global variables, including the coordinates specific to the current video.
+# The coordinates are stored in a text file with the same name as the video.
+# Afterward, it loops back to MultiExtraction to proceed with zone selection for the next video.
+# The stored coordinates will be utilized later during the analysis of each video.
 def get_variables_from_modules(video_name):
     variables = {}
     for module_name in module_names:
@@ -72,7 +72,9 @@ def get_variables_from_modules(video_name):
                 file.write(f"{var_name} = {var_value}\n")
             file.write('\n')
 
-#Open the first frame of each video in the folder for zone selection by the user before the analysis itself, setting the coordinates
+# Open the first frame of each video in the folder to allow user-defined zone selection before the actual analysis begins.
+# This step enables the user to set the coordinates for the zones on the first frame of each video.
+# These coordinates will be utilized during the subsequent analysis.
 def MultiExtraction():
     for video_name in os.listdir(Config.videopath):
         if video_name.endswith(('.mp4', '.avi')):

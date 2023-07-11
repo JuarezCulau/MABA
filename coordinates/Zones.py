@@ -283,7 +283,7 @@ def SelectZones():
             Frames.extractframes()
 
 
-#As you can see, the logic here is not that much different, this time is selecting only one ROI.
+# Note: The logic employed here is quite similar; however, in this case, we are selecting only one Region of Interest (ROI).
 def SelectDualZone():
     global DZROI_QX1, DZROI_QX2, DZROI_QY1, DZROI_QY2
     dualzoneROI = cv2.selectROI("Select the Center and then press 'Enter'", Config.image_nl, False)

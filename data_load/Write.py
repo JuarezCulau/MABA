@@ -28,7 +28,7 @@ from coordinates import Zones
 import cv2
 from data_processing.frames import Analysis
 
-#Reset values for the next analysis
+# Reset values for the next analysis
 def ResetValues():
     Config.freezing_frames = 0
     Config.N_Freezing = 0
@@ -61,14 +61,13 @@ def writeFile():
         cv2.imwrite(str(Config.projectfolder) + '/Locomotion_' + str(Config.sample) + '_' + str(Config.video_name) + '.jpg', Cutimg)
         print('Locomotion Graph Created!')
 
-#This entire part can be rebuilt with a loop. However, I tested using this method and the loop,
-    # the loading time is basically the same and I think it is better to leave each part exposed so that you can easily modify if there is something
-    # different from my analysis to your analysis at specific zone.
+    # Note: This entire section could be reconstructed using a loop. However, during testing, both the looped version and this explicit version showed similar loading times.
+    # Considering that exposing each part separately allows for easier modification in case of any specific differences between your analysis and mine for a particular zone, it is preferable to maintain this structure.
     if Config.TrackZones:
         file.write('--- Zones Tracked ---' )
         file.write('\n')
         if Zones.nZones >= 1:
-            #here we have ZoneXR (Number of frames with the mice at X Zone) / framerate (number of frames per second) = time of the mice at each zone
+            # Calculation: ZoneXR (Number of frames with the mice at X Zone) / framerate (number of frames per second) = time of the mice at each zone
             TimeAtZone1 = Config.Zone1R / Config.framerate
             print('Time At Zone 1: ' + str(TimeAtZone1) + ' seconds')
             file.write('Time At Zone 1: ' + str(TimeAtZone1) + ' seconds')
@@ -164,7 +163,8 @@ def writeFile():
                                                         file.write('Entries in Zone 12: ' + str(Config.Zone12E) + ' time')
                                                         file.write('\n')
 
-    #Dual zone follows the same logic from track zone, but at TimeAtPeriphery, the TimeAtCenter is substracted from the duration of the video
+    # Dual zone follows the same logic as track zone, but with a difference in TimeAtPeriphery calculation.
+    # In TimeAtPeriphery, the duration of TimeAtCenter is subtracted from the total video duration.
     if Config.DualZone:
         TimeAtCenter = Config.DZR / Config.framerate
         TimeAtPeriphery = (Analysis.r2 / Config.framerate) - TimeAtCenter
@@ -206,9 +206,9 @@ def writeFile():
             file.write('Number of Interactions with Second Object: ' + str(Config.N_OBJ_2) + ' time')
 
     if Config.Freeze:
-        #Frames total was considered for two points, so it needs to be divided by two
+        # Frames total was considered for two points, so it needs to be divided by two
         Config.freezing_frames_total = Config.freezing_frames_total / 2
-        #Then, we get the frame rate of the video and divide it again to get the time in seconds
+        # Then, we get the frame rate of the video and divide it again to get the time in seconds
         TimeinFreezeState = Config.freezing_frames_total / Config.framerate
         file.write('--- Freezing State Detection ---')
         file.write('\n')
@@ -219,7 +219,7 @@ def writeFile():
         file.write('Number of Interval Freezing: ' + str(Config.N_IntervalFreezing))
 
     if Config.EPM:
-        #Calculate the time at each place by dividing the number of frames by the framerate of the video
+        # Calculate the time at each place by dividing the number of frames by the framerate of the video
 
         TimeinOpenArm = Config.T_OpenArm / Config.framerate
         TimeinClosedArm = Config.T_ClosedArm / Config.framerate
