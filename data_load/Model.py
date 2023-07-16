@@ -86,13 +86,12 @@ def loadModel():
         if Config.NovelObject:
             NOR.ObjectSelection()
 
-        #Yale branch only, using the same function to generate the ROI for the Zscore Map
-        if Config.CreateLocomotionGraph or Config.Zscore:
+        #Yale branch only, using the same function to generate the ROI coordinates for the Zscore Map and Heatmap
+        if Config.CreateLocomotionGraph or Config.Zscore or Config.Heatmap:
             Locomotion.CropForLocomotionGraph()
 
-        if not Config.TrackZones and not Config.NovelObject and not Config.DualZone and not Config.CreateLocomotionGraph:
-            print('load model extract frames call')
-            Frames.extractframes()
+        print('load model extract frames call')
+        Frames.extractframes()
 
     else:
         MultiSelection.MultiExtraction()

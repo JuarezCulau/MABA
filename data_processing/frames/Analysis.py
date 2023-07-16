@@ -32,7 +32,7 @@ from coordinates import Locomotion
 from coordinates import Cage
 from data_load import Write
 from data_load import Model
-from data_processing import Freezing, ZScoreMap
+from data_processing import Freezing, ZScoreMap, Heatmap
 
 
 def ClearArrays():
@@ -784,8 +784,13 @@ def RunSess(NoMoreFrames, codec, out):
                 obj2_tracked_range = cv2.pointPolygonTest(Cage.polygon_obj2_umat, (TrackedPointX, TrackedPointY), False) > 0
                 obj3_tracked_range = cv2.pointPolygonTest(Cage.polygon_obj3_umat, (TrackedPointX, TrackedPointY), False) > 0
 
+                #If only the nose is close enough, it's still going to be used
+                obj1_tracked_range_nose = cv2.pointPolygonTest(Cage.polygon_obj1_umat, (FrameNosex, FrameNosey), False) > 0
+                obj2_tracked_range_nose = cv2.pointPolygonTest(Cage.polygon_obj2_umat, (FrameNosex, FrameNosey), False) > 0
+                obj3_tracked_range_nose = cv2.pointPolygonTest(Cage.polygon_obj3_umat, (FrameNosex, FrameNosey), False) > 0
+
                 # Check if the point is inside the rectangle
-                if obj1_tracked_range:
+                if obj1_tracked_range or obj1_tracked_range_nose:
 
                     if Config.S_Obj1:
                         cv2.putText(image, 'Cage Object 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
@@ -806,7 +811,7 @@ def RunSess(NoMoreFrames, codec, out):
                         cv2.putText(image, 'Cage Object 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
                 # Check if the point is inside the rectangle
-                if obj2_tracked_range:
+                if obj2_tracked_range or obj2_tracked_range_nose:
 
                     if Config.S_Obj2:
                         cv2.putText(image, 'Cage Object 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
@@ -827,7 +832,7 @@ def RunSess(NoMoreFrames, codec, out):
                         cv2.putText(image, 'Cage Object 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
                 # Check if the point is inside the rectangle
-                if obj3_tracked_range:
+                if obj3_tracked_range or obj3_tracked_range_nose:
 
                     if Config.S_Obj3:
                         cv2.putText(image, 'Cage Object 3', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
@@ -859,6 +864,10 @@ def RunSess(NoMoreFrames, codec, out):
             #Check if it should generate a ZcoreMap
             if Config.Zscore:
                 ZScoreMap.generate_zscore_map()
+
+            #Check if it should generate a heatmap
+            if Config.Heatmap:
+                Heatmap.generate_heatmap()
 
             ClearArrays()
             out.release

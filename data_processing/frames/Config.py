@@ -26,6 +26,7 @@ import cv2
 import numpy as np
 import GUI
 from data_load import Model
+import ctypes
 
 global confiability_threshold, Nosex, Nosey, Headx, Heady, L_Earx, L_Eary, Body1x, Body1y, CenterBodyx, CenterBodyy, Body2x, Body2y, tail1x, tail1y, tail2x, tail2y, tail3x, tail3y, tail4x, tail4y
 
@@ -156,6 +157,7 @@ CropImage = False
 EPM = False
 Cage = False
 Zscore = False
+Heatmap = True
 
 def resetvalues():
     r = 0
@@ -253,7 +255,7 @@ AST_Obj3 = 0
 
 #First the remaining variables will be set, using the acquired values by user input
 def setglobalvariables(values):
-    global modelpath, videopath, projectfolder, sample, cap, framerate, w, h, resolution, image_nl, img, videopath, video_name
+    global modelpath, videopath, projectfolder, sample, cap, framerate, w, h, resolution, image_nl, img, videopath, video_name, resized_image
 
     #Locations
     modelpath = values['-ModelPB-']
@@ -261,6 +263,11 @@ def setglobalvariables(values):
     projectfolder = values['-Folder-']
     sample = values['-Sample-']
     sample = float(values['-threshold-'])
+
+    # Function to get screen width using ctypes
+    def get_screen_width():
+        user32 = ctypes.windll.user32
+        return user32.GetSystemMetrics(0)
 
     #Data from video for selection
     cap = cv2.VideoCapture(videopath)
@@ -273,5 +280,12 @@ def setglobalvariables(values):
     img.fill(255)
     video_name = values['-VideoFile-']
     print('Variables set!')
+
+    # Detect screen width and calculate resize ratio
+    window_width = get_screen_width()  # Get screen width
+    resize_ratio = window_width / w
+
+    # Resize image to fit within the detected window width
+    resized_image = cv2.resize(image_nl, (int(w * resize_ratio), int(h * resize_ratio)))
 
     Model.loadModel()

@@ -79,17 +79,6 @@ def ObjectSelection():
     R2_QY1 = ((RON[1])[1])
     R2_QY2 = R2_Y2
 
-    if Config.SingleVideo:
-        if Config.CreateLocomotionGraph:
-            Locomotion.CropForLocomotionGraph()
-
-        if Config.Interaction:
-            SpecificObjectSelection()
-
-        if not Config.CreateLocomotionGraph and not Config.Interaction:
-            print('object selection extract frames call')
-            Frames.extractframes()
-
 # Description: This function is used to track the close proximity of the object. It's important to note that this function will only work properly if the model has sufficient accuracy to track the nose of the mice.
 #
 # Usage: Before using this function, it is recommended to test the model on a video or train a new model (pb model) to ensure accurate nose tracking. Adjust the threshold value accordingly.
@@ -127,6 +116,3 @@ def SpecificObjectSelection():
     OBJ2_QX2 = OBJ2_X2
     OBJ2_QY1 = ((OBJ[1])[1])
     OBJ2_QY2 = OBJ2_Y2
-
-    if Config.SingleVideo:
-        Frames.extractframes()
