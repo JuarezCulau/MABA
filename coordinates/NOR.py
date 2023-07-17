@@ -33,7 +33,7 @@ from data_processing.frames import Config
 # Approach: The function follows a similar logic as the track_zones function, but in this case, it is designed to track only two objects.
 # If there are more objects in your experiment, you can expand this section accordingly.
 def ObjectSelection():
-    RON = cv2.selectROIs("select the area around the objects, press 'Enter' after selecting the first one, 'Esc' After selecting the second", Config.image_nl, False)
+    RON = cv2.selectROIs("select the area around the objects, press 'Enter' after selecting the first one, 'Esc' After selecting the second", Config.resized_image, False)
     global R1_X2, R1_Y2, R1_1, R1_2, R1_3, R1_4, R1_QX1, R1_QX2, R1_QY1, R1_QY2
     global R2_X2, R2_Y2, R2_1, R2_2, R2_3, R2_4, R2_QX1, R2_QX2, R2_QY1, R2_QY2
     #First Object
@@ -57,12 +57,12 @@ def ObjectSelection():
     #Example 1
     #Example function mentioned above | This is going to create a image with the four points of the zone around the object
     # First click coordinate
-    #cv2.circle(image_nl, (R1_1), radius=20, color=(0, 0, 255), thickness=10)
+    #cv2.circle(resized_image, (R1_1), radius=20, color=(0, 0, 255), thickness=10)
     # release click coordinate
-    #cv2.circle(image_nl, (R1_2), radius=20, color=(0, 0, 255), thickness=10)
-    #cv2.circle(image_nl, (R1_3), radius=20, color=(0, 0, 255), thickness=10)
-    #cv2.circle(image_nl, (R1_4), radius=20, color=(0, 0, 255), thickness=10)
-    #cv2.imwrite('Object 1.jpg', image_nl)
+    #cv2.circle(resized_image, (R1_2), radius=20, color=(0, 0, 255), thickness=10)
+    #cv2.circle(resized_image, (R1_3), radius=20, color=(0, 0, 255), thickness=10)
+    #cv2.circle(resized_image, (R1_4), radius=20, color=(0, 0, 255), thickness=10)
+    #cv2.imwrite('Object 1.jpg', resized_image)
 
     #Second Object
     R2_X2 = ((RON[1])[0]) + ((RON[1])[2])
@@ -83,8 +83,7 @@ def ObjectSelection():
 #
 # Usage: Before using this function, it is recommended to test the model on a video or train a new model (pb model) to ensure accurate nose tracking. Adjust the threshold value accordingly.
 def SpecificObjectSelection():
-    print('58063865036')
-    OBJ = cv2.selectROIs("Select the Objects, press 'Enter' after selecting the first one, 'Esc' After selecting the second", Config.image_nl, False)
+    OBJ = cv2.selectROIs("Select the Objects, press 'Enter' after selecting the first one, 'Esc' After selecting the second", Config.resized_image, False)
     global OBJ1_X2, OBJ1_Y2, OBJ1_1, OBJ1_2, OBJ1_3, OBJ1_4, OBJ1_QX1, OBJ1_QX2, OBJ1_QY1, OBJ1_QY2
     global OBJ2_X2, OBJ2_Y2, OBJ2_1, OBJ2_2, OBJ2_3, OBJ2_4, OBJ2_QX1, OBJ2_QX2, OBJ2_QY1, OBJ2_QY2
     #First Object

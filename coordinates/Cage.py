@@ -56,7 +56,7 @@ def draw_points(event, x, y, flags, param):
             points.append((x, y))
 
         # Draw circles at the selected points
-        image = Config.image_nl
+        image = Config.resized_image
         image_copy = image.copy()
         for point in points:
             cv2.circle(image_copy, point, 3, (0, 0, 255), -1)
@@ -128,7 +128,7 @@ def draw_polygons(image, polygons):
 
 def Cage_Selection():
     # Read the image
-    image = Config.image_nl
+    image = Config.resized_image
 
     # Create a copy of the image for drawing rectangles
     image_copy = image.copy()
@@ -157,7 +157,7 @@ def Cage_Selection():
             break
 
         if key == 27:  # 27 is the ASCII code for the Esc key
-            SetCoordinates(Config.image_nl, Config.Cage_Rectangles)
+            SetCoordinates(Config.resized_image, Config.Cage_Rectangles)
             exit_flag = True  # Set the flag to exit the while loop
 
     cv2.destroyAllWindows()

@@ -25,7 +25,7 @@ from data_processing.frames import Config
 
 def CropForAnalysis():
     global CI_QX1, CI_QX2, CI_QY1, CI_QY2, y_start, y_end, x_start, x_end
-    CropROI = cv2.selectROI("(Crop Image For Analysis) Select the Entire Are of Your Experiment 'Enter'", Config.image_nl, False)
+    CropROI = cv2.selectROI("(Crop Image For Analysis) Select the Entire Are of Your Experiment 'Enter'", Config.resized_image, False)
 
     CI_X2 = (CropROI[0]) + (CropROI[2])
     CI_Y2 = (CropROI[1]) + (CropROI[3])

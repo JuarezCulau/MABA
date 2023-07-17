@@ -66,9 +66,9 @@ def generate_heatmap():
     heatmap = 0.5 * heatmap_x + 0.5 * heatmap_y
 
     # Display the heatmap
-    plt.imshow(heatmap)
-    plt.colorbar()
-    plt.show()
+    #plt.imshow(heatmap)
+    #plt.colorbar()
+    #plt.show()
 
     # Save the heatmap
     plt.imsave(str(Config.projectfolder) + '/heatmap_' + str(Config.sample) + '_' + str(Config.video_name) + '.jpg', heatmap)

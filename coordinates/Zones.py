@@ -48,7 +48,7 @@ def SelectZones():
 
 
     # Zones field
-    Zone = cv2.selectROIs("Select Zones with mouse and then press 'Enter', 'Esc' to finish selection", Config.image_nl, False)
+    Zone = cv2.selectROIs("Select Zones with mouse and then press 'Enter', 'Esc' to finish selection", Config.resized_image, False)
     global nZones
 
     # Small loop only to discover how many zones were selected by the user
@@ -274,7 +274,7 @@ def SelectZones():
 # Note: The logic employed here is quite similar; however, in this case, we are selecting only one Region of Interest (ROI).
 def SelectDualZone():
     global DZROI_QX1, DZROI_QX2, DZROI_QY1, DZROI_QY2
-    dualzoneROI = cv2.selectROI("Select the Center and then press 'Enter'", Config.image_nl, False)
+    dualzoneROI = cv2.selectROI("Select the Center and then press 'Enter'", Config.resized_image, False)
     DZROI_X2 = (dualzoneROI[0]) + (dualzoneROI[2])
     DZROI_Y2 = (dualzoneROI[1]) + (dualzoneROI[3])
 
