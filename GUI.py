@@ -21,7 +21,6 @@ specific language governing permissions and limitations
 under the License.
 """
 import os
-
 import PySimpleGUI as sg
 import tensorflow as tf
 import cv2
@@ -29,57 +28,83 @@ import numpy as np
 import sys
 import time
 from io import StringIO
-import Config
+from data_processing.frames import Config
 
 #The GUI (Using PySimpleGUI)
 
 def main():
+    # Define the buttons layout
+    buttons_layout = [
+        [sg.Text('Track Multiple Zones')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-TrackZones?-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
+        [sg.Text('Dual Zones')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-DualZones-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
+        [sg.Text('Novel Object Recognition')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-RON?-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
+        [sg.Text('Crop Object Recognition')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-CropRON?-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
+        [sg.Text('Detect Interaction Novel Object Recognition')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-Interaction-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
+        [sg.Text('Locomotion Graph')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-LocomotionGraph?-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
+        [sg.Text('Freeze State')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-FreezeState?-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
+        [sg.Text('Crop Image (Freeze)')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-CropImage?-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
+        [sg.Text('Elevated Plus Maze')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-EPM?-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
+    ]
+
     global TrackZones, NovelObject, CropRon, CreateLocomotionGraph, DualZone, Interaction
     layout = [[sg.Text('Select the Model PB')],
               [sg.InputText(size=(50, 1), key='-ModelPB-'), sg.FileBrowse()],
               [sg.Text('Select the Video or Folder for Analysis')],
-              # The line down here is from the third method, if that is not used, delete this line
-              # [sg.InputText(size=(50, 1), key='-VideoFile-'), sg.FileBrowse(file_types=(("Video Files", ".mp4;.avi"),), target='-VideoFile-FileBrowse-', enable_events=True), sg.FolderBrowse(target='-VideoFile-FolderBrowse-', enable_events=True)],
               [sg.InputText(size=(50, 1), key='-VideoFile-'), sg.FileBrowse(file_types=(("Video Files", "*.mp4;*.avi"),), target='-VideoFile-', enable_events=True), sg.FolderBrowse(target='-VideoFile-', enable_events=True)],
               [sg.Text('Analysis Folder')],
               [sg.InputText(size=(50, 1), key='-Folder-'), sg.FolderBrowse()],
               [sg.Text('Name Your Sample')],
               [sg.InputText(key='-Sample-')],
+              [sg.Text('Confiability Threshold')],
+              [sg.InputText(key='-threshold-')],
 
-              [sg.Text('Track Multiple Zones')],
-              [sg.Text('Off'),
-               sg.Button(image_data=toggle_btn_off, key='-TrackZones?-', button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0, metadata=False),
-               sg.Text('On')],
-              [sg.Text('Dual Zones')],
-              [sg.Text('Off'),
-               sg.Button(image_data=toggle_btn_off, key='-DualZones-',
-                         button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
-                         metadata=False),
-               sg.Text('On')],
-              [sg.Text('Novel Object Recognition')],
-              [sg.Text('Off'),
-               sg.Button(image_data=toggle_btn_off, key='-RON?-',
-                         button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
-                         metadata=False),
-               sg.Text('On')],
-              [sg.Text('Crop Object Recognition')],
-              [sg.Text('Off'),
-               sg.Button(image_data=toggle_btn_off, key='-CropRON?-',
-                         button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
-                         metadata=False),
-               sg.Text('On')],
-              [sg.Text('Detect Interaction Novel Object Recognition')],
-              [sg.Text('Off'),
-               sg.Button(image_data=toggle_btn_off, key='-Interaction-',
-                         button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
-                         metadata=False),
-               sg.Text('On')],
-              [sg.Text('Locomotion Graph')],
-              [sg.Text('Off'),
-               sg.Button(image_data=toggle_btn_off, key='-LocomotionGraph?-',
-                         button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
-                         metadata=False),
-               sg.Text('On')],
+              [sg.Text('Analysis Options', font='Helvetica 12 bold')],
+              [sg.Column(buttons_layout, size=(700, 300), scrollable=True, vertical_scroll_only=True, key='-BUTTON_COLUMN-')],
               [sg.Button('Run'), sg.Button('Exit')],
               ]
 
@@ -90,41 +115,6 @@ def main():
         #print(window['-TOGGLE-GRAPHIC-'].metadata)
         if event in (sg.WIN_CLOSED, 'Exit'):
             break
-
-        # This method is bugging the first button for some reason, no idea why. (First Method)
-        # Check if it's only one video or folder
-        selected_path = values['-VideoFile-']
-        if selected_path:
-            if os.path.isfile(selected_path):
-                Config.SingleVideo = True
-            elif os.path.isdir(selected_path):
-                # Analyze all video files in the selected folder
-                Config.SingleVideo = False
-
-        # (Second Method)
-        # Check if it's only one video or folder, adapted this because the code above was bugging the TrackZones button for some reason
-        # If there is bugs related to this event, then is probably here, replace with the code above and find another way to fix the problem
-        # Update for this, this event is not being fired, so I going to try another method
-        # elif event == '-VideoFile-':
-        #     print("At event video file")
-        #     if values['-VideoFile-']:
-        #         if os.path.isfile(values['-VideoFile-']):
-        #             Config.SingleVideo - True
-        #             print('single video true')
-        #         elif os.path.isdir(values['-VideoFile-']):
-        #             print('single video false')
-        #             Config.SingleVideo = False
-
-        # (Third Method)
-        # this is the third method, delete the ones above and submit before sending it to the main branch
-        # It's not working as well
-        # elif event == '-VideoFile-FileBrowse-':
-        #     Config.SingleVideo - True
-        #
-        # elif event == '-VideoFile-FolderBrowse-':
-        #     Config.SingleVideo = False
-
-
 
         #First button logic
         elif event == '-TrackZones?-':  # if the graphical button that changes images
@@ -180,13 +170,47 @@ def main():
         else:
             Config.CreateLocomotionGraph = False
 
+        # Seventh Button logic
+        if event == '-FreezeState?-':  # if the graphical button that changes images
+            window['-FreezeState?-'].metadata = not window['-FreezeState?-'].metadata
+            window['-FreezeState?-'].update(image_data=toggle_btn_on if window['-FreezeState?-'].metadata else toggle_btn_off)
+        if window['-FreezeState?-'].metadata:
+            Config.Freeze = True
+        else:
+            Config.Freeze = False
+
+        # Eighth Button logic
+        if event == '-CropImage?-':  # if the graphical button that changes images
+            window['-CropImage?-'].metadata = not window['-CropImage?-'].metadata
+            window['-CropImage?-'].update(image_data=toggle_btn_on if window['-CropImage?-'].metadata else toggle_btn_off)
+        if window['-CropImage?-'].metadata:
+            Config.CropImage = True
+        else:
+            Config.CropImage = False
+
+        # Ninth Button logic
+        if event == '-EPM?-':  # if the graphical button that changes images
+            window['-EPM?-'].metadata = not window['-EPM?-'].metadata
+            window['-EPM?-'].update(image_data=toggle_btn_on if window['-EPM?-'].metadata else toggle_btn_off)
+        if window['-EPM?-'].metadata:
+            Config.EPM = True
+        else:
+            Config.EPM = False
+
+        # Check if it's only one video or folder
+        selected_path = values['-VideoFile-']
+        if selected_path:
+            if os.path.isfile(selected_path):
+                Config.SingleVideo = True
+            elif os.path.isdir(selected_path):
+                # Analyze all video files in the selected folder
+                Config.SingleVideo = False
+
         #the process will begin here once "Run" is selected
         if event == 'Run':
             Config.setglobalvariables(values)
 
     window.close()
-
-
 
 if __name__ == '__main__':
     # The base64 strings for the button images
