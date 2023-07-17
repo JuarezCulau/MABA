@@ -24,15 +24,10 @@ import ast
 import os
 import cv2
 import numpy as np
-from data_processing.frames import Config
+from data_processing.frames import Config, Analysis
 import GUI
-from data_processing.frames import Analysis
 from sys import getsizeof
-from coordinates import CropImage
-from coordinates import EPM
-from coordinates import Locomotion
-from coordinates import NOR
-from coordinates import Zones
+from coordinates import CropImage, EPM, Locomotion, NOR, Zones
 
 def convert_to_int(value):
     return int(value) if value is not None else None
@@ -219,7 +214,7 @@ def extractframes():
             if Config.CropImage:
                 # Crop the frame using the ROI coordinates and append the cropped frame to the list of cropped frames
                 roi_frame = image_np[CropImage.y_start:CropImage.y_end, CropImage.x_start:CropImage.x_end]
-                if (getsizeof(Config.RawImages) <= 20000):
+                if (getsizeof(Config.RawImages) <= Config.max_frames):
                     print('appending')
                     Config.RawImages.append(roi_frame)
 
@@ -229,7 +224,7 @@ def extractframes():
                     Analysis.RunSess(Config.NoMoreFrames, codec, out)
 
             else:
-                if (getsizeof(Config.RawImages) <= 20000):
+                if (getsizeof(Config.RawImages) <= Config.max_frames):
                     print('appending')
                     Config.RawImages.append(image_np)
 
@@ -261,6 +256,11 @@ def extractframes():
                 Config.img = Config.np.zeros((h, w, 3), dtype=Config.np.uint8)
                 Config.img.fill(255)
                 Config.video_name = video_name
+
+                # ----
+                # Find the max number of frames per loop
+                memory_usage_per_frame = w * h * Config.bytes_per_pixel
+                Config.max_frames = int(Config.gpu_memory_bytes / memory_usage_per_frame)
 
                 ExtractCoordinatestxt(video_name)
 
@@ -298,7 +298,7 @@ def extractframes():
                         #Config.resolution = roi_frame.shape[1], roi_frame.shape[0]
                         #out = cv2.VideoWriter(str(Config.projectfolder) + '/' + str(Config.sample) + str(video_name), codec, Config.framerate, Config.resolution)
 
-                        if (getsizeof(Config.RawImages) <= 20000):
+                        if (getsizeof(Config.RawImages) <= Config.max_frames):
                             print('appending')
                             Config.RawImages.append(roi_frame)
 
@@ -309,7 +309,7 @@ def extractframes():
 
                     else:
 
-                        if (getsizeof(Config.RawImages) <= 20000):
+                        if (getsizeof(Config.RawImages) <= Config.max_frames):
                             print('appending')
                             Config.RawImages.append(image_np)
 

@@ -71,6 +71,12 @@ def main():
                    button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
                    metadata=False),
          sg.Text('On')],
+        [sg.Text('Heatmap')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-Heatmap?-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
         [sg.Text('Freeze State')],
         [sg.Text('Off'),
          sg.Button(image_data=toggle_btn_off, key='-FreezeState?-',
@@ -89,6 +95,12 @@ def main():
                    button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
                    metadata=False),
          sg.Text('On')],
+        [sg.Text('Cage')],
+        [sg.Text('Off'),
+         sg.Button(image_data=toggle_btn_off, key='-Cage?-',
+                   button_color=(sg.theme_background_color(), sg.theme_background_color()), border_width=0,
+                   metadata=False),
+         sg.Text('On')],
     ]
 
     global TrackZones, NovelObject, CropRon, CreateLocomotionGraph, DualZone, Interaction
@@ -102,6 +114,8 @@ def main():
               [sg.InputText(key='-Sample-')],
               [sg.Text('Confiability Threshold')],
               [sg.InputText(key='-threshold-')],
+              [sg.Text('Graphics Memory (GB)')],
+              [sg.InputText(key='-graphicsmemory-')],
 
               [sg.Text('Analysis Options', font='Helvetica 12 bold')],
               [sg.Column(buttons_layout, size=(700, 300), scrollable=True, vertical_scroll_only=True, key='-BUTTON_COLUMN-')],
@@ -171,6 +185,15 @@ def main():
             Config.CreateLocomotionGraph = False
 
         # Seventh Button logic
+        if event == '-Heatmap?-':  # if the graphical button that changes images
+            window['-Heatmap?-'].metadata = not window['-Heatmap?-'].metadata
+            window['-Heatmap?-'].update(image_data=toggle_btn_on if window['-Heatmap?-'].metadata else toggle_btn_off)
+        if window['-Heatmap?-'].metadata:
+            Config.Heatmap = True
+        else:
+            Config.Heatmap = False
+
+        # Eighth Button logic
         if event == '-FreezeState?-':  # if the graphical button that changes images
             window['-FreezeState?-'].metadata = not window['-FreezeState?-'].metadata
             window['-FreezeState?-'].update(image_data=toggle_btn_on if window['-FreezeState?-'].metadata else toggle_btn_off)
@@ -179,7 +202,7 @@ def main():
         else:
             Config.Freeze = False
 
-        # Eighth Button logic
+        # Ninth Button logic
         if event == '-CropImage?-':  # if the graphical button that changes images
             window['-CropImage?-'].metadata = not window['-CropImage?-'].metadata
             window['-CropImage?-'].update(image_data=toggle_btn_on if window['-CropImage?-'].metadata else toggle_btn_off)
@@ -188,7 +211,7 @@ def main():
         else:
             Config.CropImage = False
 
-        # Ninth Button logic
+        # Tenth Button logic
         if event == '-EPM?-':  # if the graphical button that changes images
             window['-EPM?-'].metadata = not window['-EPM?-'].metadata
             window['-EPM?-'].update(image_data=toggle_btn_on if window['-EPM?-'].metadata else toggle_btn_off)
@@ -196,6 +219,15 @@ def main():
             Config.EPM = True
         else:
             Config.EPM = False
+
+        # Eleventh Button logic
+        if event == '-Cage?-':  # if the graphical button that changes images
+            window['-Cage?-'].metadata = not window['-Cage?-'].metadata
+            window['-Cage?-'].update(image_data=toggle_btn_on if window['-Cage?-'].metadata else toggle_btn_off)
+        if window['-Cage?-'].metadata:
+            Config.Cage = True
+        else:
+            Config.Cage = False
 
         # Check if it's only one video or folder
         selected_path = values['-VideoFile-']

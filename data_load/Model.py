@@ -31,6 +31,7 @@ from coordinates import NOR
 from coordinates import Locomotion
 from coordinates import EPM
 from coordinates import CropImage
+from coordinates import Cage
 
 
 #Load frozen tensorflow model selected by user
@@ -67,6 +68,9 @@ def loadModel():
 
     #Most of the next functions are optional, selected by the user before pressing "Run"
     if Config.SingleVideo:
+        if Config.Cage:
+            Cage.Cage_Selection()
+
         if Config.CropImage:
             CropImage.CropForAnalysis()
 
@@ -82,12 +86,12 @@ def loadModel():
         if Config.NovelObject:
             NOR.ObjectSelection()
 
-        if Config.CreateLocomotionGraph:
+        #Yale branch only, using the same function to generate the ROI coordinates for the Zscore Map and Heatmap
+        if Config.CreateLocomotionGraph or Config.Zscore or Config.Heatmap:
             Locomotion.CropForLocomotionGraph()
 
-        if not Config.TrackZones and not Config.NovelObject and not Config.DualZone and not Config.CreateLocomotionGraph:
-            print('load model extract frames call')
-            Frames.extractframes()
+        print('load model extract frames call')
+        Frames.extractframes()
 
     else:
         MultiSelection.MultiExtraction()
