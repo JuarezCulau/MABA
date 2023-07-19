@@ -70,7 +70,7 @@ def draw_points(event, x, y, flags, param):
             # Clear the points list for the next rectangle
             points.clear()
 
-        cv2.imshow("Image", image_copy)
+        cv2.imshow("Click to select five zones: two open arms, two enclosed arms, and the center. Press (Esc) when finished", image_copy)
 
 def calculate_rectangle_coordinates(points):
     return [points[0], points[1], points[2], points[3]]
@@ -127,7 +127,7 @@ def GenerateUMat():
     # polygon_c2_umat = cv2.UMat(polygon_c2_np, ranges=[0, 256, 0, 256, 0, 256])
     # polygon_center_umat = cv2.UMat(polygon_center_np, ranges=[0, 256, 0, 256, 0, 256])
 
-def SetCoordinates(image, polygons):
+def SetCoordinates():
     global polygon_op1_umat, polygon_op2_umat, polygon_c1_umat, polygon_c2_umat, polygon_center_umat
     global polygon_op1, polygon_op2, polygon_c1, polygon_c2, polygon_center
     global p_op1, p_op2, p_c1, p_c2, p_center
@@ -138,27 +138,47 @@ def SetCoordinates(image, polygons):
     p_c2 = []
     p_center = []
 
+    polygons = Config.EPM_Rectangles
+
+    resized_polygons = []
+
+    # Adjust the coordinates from the resized image into the original image
     for polygon in polygons:
+        adjusted_polygon = []
+
+        for point in polygon:
+            x, y = point
+            adjusted_x = int(x / Config.resize_ratio)
+            adjusted_y = int(y / Config.resize_ratio)
+            adjusted_point = (adjusted_x, adjusted_y)
+            adjusted_polygon.append(adjusted_point)
+
+        resized_polygons.append(adjusted_polygon)
+
+    # Create a copy of the original image
+    image_copy = Config.image_nl
+
+    for polygon in resized_polygons:
         # Connect the points with lines
         for i in range(len(polygon)):
             start_point = polygon[i]
             end_point = polygon[(i + 1) % len(polygon)]
-            cv2.line(image, start_point, end_point, (0, 255, 0), 2)  # Customize color and thickness as needed
+            cv2.line(image_copy, start_point, end_point, (0, 255, 0), 2)  # Customize color and thickness as needed
 
         # Store the polygon coordinates based on their order
-        if polygon == polygons[0]:
+        if polygon == resized_polygons[0]:
             p_op1 = polygon
-        elif polygon == polygons[1]:
+        elif polygon == resized_polygons[1]:
             p_op2 = polygon
-        elif polygon == polygons[2]:
+        elif polygon == resized_polygons[2]:
             p_c1 = polygon
-        elif polygon == polygons[3]:
+        elif polygon == resized_polygons[3]:
             p_c2 = polygon
-        elif polygon == polygons[4]:
+        elif polygon == resized_polygons[4]:
             p_center = polygon
 
     # Show the image with the polygons
-    cv2.imshow('Image with Polygons', image)
+    cv2.imshow('Image with Polygons', image_copy)
     cv2.waitKey(0)
 
     # Convert the polygon vertices to a numpy array
@@ -197,15 +217,15 @@ def EPM_Selection():
     image_copy = image.copy()
 
     # Create a window and set the mouse callback
-    cv2.namedWindow("Image")
-    cv2.setMouseCallback("Image", draw_points)
+    cv2.namedWindow("Click to select five zones: two open arms, two enclosed arms, and the center. Press (Esc) when finished")
+    cv2.setMouseCallback("Click to select five zones: two open arms, two enclosed arms, and the center. Press (Esc) when finished", draw_points)
 
     exit_flag = False  # Flag variable to control the while loop
 
     while not exit_flag:
         # Show the image with all rectangles
         draw_all_rectangles(image_copy)
-        cv2.imshow("Image", image_copy)
+        cv2.imshow("Click to select five zones: two open arms, two enclosed arms, and the center. Press (Esc) when finished", image_copy)
 
         key = cv2.waitKey(1) & 0xFF
 
@@ -220,7 +240,7 @@ def EPM_Selection():
             break
 
         if key == 27:  # 27 is the ASCII code for the Esc key
-            SetCoordinates(Config.resized_image, Config.EPM_Rectangles)
+            SetCoordinates()
             exit_flag = True  # Set the flag to exit the while loop
 
     cv2.destroyAllWindows()

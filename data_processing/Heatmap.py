@@ -23,26 +23,27 @@ under the License.
 
 import cv2
 from coordinates import Locomotion
-from data_processing.frames import Frames
-from data_processing.frames import Config
-from data_processing.frames import Analysis
+from data_processing.frames import Frames, Config, Analysis
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Creating a copy of those coordinates because they are cleared during the cycles of the analysis
+CenterBodyx_copy = []
+CenterBodyy_copy = []
+
 def generate_heatmap():
-    print("460923423446356766")
     # Calculate mean and standard deviation
-    mean_x = np.mean(Config.CenterBodyx)
-    mean_y = np.mean(Config.CenterBodyy)
-    std_x = np.std(Config.CenterBodyx)
-    std_y = np.std(Config.CenterBodyy)
+    mean_x = np.mean(CenterBodyx_copy)
+    mean_y = np.mean(CenterBodyy_copy)
+    std_x = np.std(CenterBodyx_copy)
+    std_y = np.std(CenterBodyy_copy)
 
     # Create ROI image
     RoiImg = Config.img[Locomotion.ER_QY1: Locomotion.ER_QY2, Locomotion.ER_QX1: Locomotion.ER_QX2]
 
     # Normalize z-score values
-    z_x = (Config.CenterBodyx - mean_x) / std_x
-    z_y = (Config.CenterBodyy - mean_y) / std_y
+    z_x = (CenterBodyx_copy - mean_x) / std_x
+    z_y = (CenterBodyy_copy - mean_y) / std_y
 
     # Determine the size of the heatmap based on the ROI image size
     map_height, map_width = RoiImg.shape[:2]
@@ -52,7 +53,7 @@ def generate_heatmap():
     heatmap_y = np.zeros((map_height, map_width))
 
     # Accumulate values in the heatmap
-    for x, y, z_x_val, z_y_val in zip(Config.CenterBodyx, Config.CenterBodyy, z_x, z_y):
+    for x, y, z_x_val, z_y_val in zip(CenterBodyx_copy, CenterBodyy_copy, z_x, z_y):
         x_coord = int(x - Locomotion.ER_QX1)
         y_coord = int(y - Locomotion.ER_QY1)
         heatmap_x[y_coord, x_coord] += z_x_val
@@ -66,9 +67,14 @@ def generate_heatmap():
     heatmap = 0.5 * heatmap_x + 0.5 * heatmap_y
 
     # Display the heatmap
-    #plt.imshow(heatmap)
-    #plt.colorbar()
+    plt.imshow(heatmap)
+    plt.colorbar()
     #plt.show()
 
-    # Save the heatmap
-    plt.imsave(str(Config.projectfolder) + '/heatmap_' + str(Config.sample) + '_' + str(Config.video_name) + '.jpg', heatmap)
+    # Save the heatmap using plt.savefig()
+    filename = str(Config.projectfolder) + '/heatmap_' + str(Config.sample) + '.jpg'
+    plt.savefig(filename)
+
+    # Save the heatmap using plt.imsave()
+    full_size_filename = str(Config.projectfolder) + 'full_size_heatmap_' + str(Config.sample) + '.jpg'
+    plt.imsave(full_size_filename, heatmap)

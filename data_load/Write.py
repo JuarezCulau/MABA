@@ -167,7 +167,7 @@ def writeFile():
     # In TimeAtPeriphery, the duration of TimeAtCenter is subtracted from the total video duration.
     if Config.DualZone:
         TimeAtCenter = Config.DZR / Config.framerate
-        TimeAtPeriphery = (Analysis.r2 / Config.framerate) - TimeAtCenter
+        TimeAtPeriphery = (Analysis.r3 / Config.framerate) - TimeAtCenter
 
         print('Time At Center: ' + str(TimeAtCenter) + ' seconds')
         print('Time At Periphery: ' + str(TimeAtPeriphery) + ' seconds')
@@ -178,7 +178,6 @@ def writeFile():
         file.write('\n')
         file.write('Time At Periphery: ' + str(TimeAtPeriphery) + ' seconds')
         file.write('\n')
-
 
     if Config.NovelObject:
         TimeNearFirstObj = Config.FirstObjectR / Config.framerate

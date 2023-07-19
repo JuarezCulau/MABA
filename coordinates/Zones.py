@@ -48,7 +48,18 @@ def SelectZones():
 
 
     # Zones field
-    Zone = cv2.selectROIs("Select Zones with mouse and then press 'Enter', 'Esc' to finish selection", Config.image_nl, False)
+    Zone = cv2.selectROIs("Select Zones with mouse and then press 'Enter', 'Esc' to finish selection", Config.resized_image, False)
+
+    r = 0
+    # Adjust the ROI coordinates based on the resize ratio for the original image
+    for roi_resized in Zone:
+        ((Zone[r])[0]) = int(roi_resized[0] / Config.resize_ratio)
+        ((Zone[r])[1]) = int(roi_resized[1] / Config.resize_ratio)
+        ((Zone[r])[2]) = int(roi_resized[2] / Config.resize_ratio)
+        ((Zone[r])[3]) = int(roi_resized[3] / Config.resize_ratio)
+
+        r = r + 1
+
     global nZones
 
     # Small loop only to discover how many zones were selected by the user
@@ -271,44 +282,29 @@ def SelectZones():
                                                     Z12_QY1 = ((Zone[11])[1])
                                                     Z12_QY2 = Z12_Y2
 
-    if Config.SingleVideo:
-        if Config.NovelObject:
-            NOR.ObjectSelection()
-
-        if Config.DualZone:
-            SelectDualZone()
-
-        if not Config.NovelObject and not Config.DualZone:
-            print('zone extract frames call')
-            Frames.extractframes()
-
-
 # Note: The logic employed here is quite similar; however, in this case, we are selecting only one Region of Interest (ROI).
 def SelectDualZone():
     global DZROI_QX1, DZROI_QX2, DZROI_QY1, DZROI_QY2
-    dualzoneROI = cv2.selectROI("Select the Center and then press 'Enter'", Config.image_nl, False)
-    DZROI_X2 = (dualzoneROI[0]) + (dualzoneROI[2])
-    DZROI_Y2 = (dualzoneROI[1]) + (dualzoneROI[3])
+    dualzoneROI = cv2.selectROI("Select the Center and then press 'Enter'", Config.resized_image, False)
 
-    DZR_1 = (dualzoneROI[0]), (dualzoneROI[1])
-    DZR_2 = DZROI_X2, DZROI_Y2
-    DZR_3 = (dualzoneROI[0]), DZROI_Y2
-    DZR_4 = DZROI_X2, (dualzoneROI[1])
+    # Adjust the ROI coordinates based on the resize ratio for the original image
+    adjusted_dualzoneROI = [
+        int(dualzoneROI[0] / Config.resize_ratio),
+        int(dualzoneROI[1] / Config.resize_ratio),
+        int(dualzoneROI[2] / Config.resize_ratio),
+        int(dualzoneROI[3] / Config.resize_ratio)
+    ]
+
+    DZROI_X2 = adjusted_dualzoneROI[0] + adjusted_dualzoneROI[2]
+    DZROI_Y2 = adjusted_dualzoneROI[1] + adjusted_dualzoneROI[3]
+
+    DZR_1 = (adjusted_dualzoneROI[0], adjusted_dualzoneROI[1])
+    DZR_2 = (DZROI_X2, DZROI_Y2)
+    DZR_3 = (adjusted_dualzoneROI[0], DZROI_Y2)
+    DZR_4 = (DZROI_X2, adjusted_dualzoneROI[1])
 
     # Variables for zone calculation
-    DZROI_QX1 = (dualzoneROI[0])
+    DZROI_QX1 = adjusted_dualzoneROI[0]
     DZROI_QX2 = DZROI_X2
-    DZROI_QY1 = (dualzoneROI[1])
+    DZROI_QY1 = adjusted_dualzoneROI[1]
     DZROI_QY2 = DZROI_Y2
-
-    if Config.SingleVideo:
-        if Config.NovelObject:
-            NOR.ObjectSelection()
-
-        if Config.CreateLocomotionGraph:
-            Locomotion.CropForLocomotionGraph()
-
-
-        if not Config.NovelObject and not Config.CreateLocomotionGraph:
-            print('dual zone extract frames call')
-            Frames.extractframes()

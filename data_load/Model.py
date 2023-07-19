@@ -31,8 +31,6 @@ from coordinates import NOR
 from coordinates import Locomotion
 from coordinates import EPM
 from coordinates import CropImage
-from coordinates import Cage
-
 
 #Load frozen tensorflow model selected by user
 # Note: It is highly recommended to train your own model using DeepLabCut and ResNet50 for optimal performance.
@@ -68,8 +66,6 @@ def loadModel():
 
     #Most of the next functions are optional, selected by the user before pressing "Run"
     if Config.SingleVideo:
-        if Config.Cage:
-            Cage.Cage_Selection()
 
         if Config.CropImage:
             CropImage.CropForAnalysis()
@@ -86,8 +82,11 @@ def loadModel():
         if Config.NovelObject:
             NOR.ObjectSelection()
 
-        #Yale branch only, using the same function to generate the ROI coordinates for the Zscore Map and Heatmap
-        if Config.CreateLocomotionGraph or Config.Zscore or Config.Heatmap:
+        if Config.Interaction:
+            NOR.SpecificObjectSelection()
+
+        # Using the same function to generate the ROI coordinates for Locomotion Graph and Heatmap
+        if Config.CreateLocomotionGraph or Config.Heatmap:
             Locomotion.CropForLocomotionGraph()
 
         print('load model extract frames call')
