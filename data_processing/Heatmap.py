@@ -29,6 +29,10 @@ from data_processing.frames import Analysis
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Creating a copy of those coordinates because they are cleared during the cycles of the analysis
+CenterBodyx_copy = []
+CenterBodyy_copy = []
+
 def generate_heatmap():
     print("460923423446356766")
     # Calculate mean and standard deviation
@@ -66,9 +70,14 @@ def generate_heatmap():
     heatmap = 0.5 * heatmap_x + 0.5 * heatmap_y
 
     # Display the heatmap
-    #plt.imshow(heatmap)
-    #plt.colorbar()
+    plt.imshow(heatmap)
+    plt.colorbar()
     #plt.show()
 
-    # Save the heatmap
-    plt.imsave(str(Config.projectfolder) + '/heatmap_' + str(Config.sample) + '_' + str(Config.video_name) + '.jpg', heatmap)
+    # Save the heatmap using plt.savefig()
+    filename = str(Config.projectfolder) + '/heatmap_' + str(Config.sample) + '.jpg'
+    plt.savefig(filename)
+
+    # Save the heatmap using plt.imsave()
+    full_size_filename = str(Config.projectfolder) + 'full_size_heatmap_' + str(Config.sample) + '.jpg'
+    plt.imsave(full_size_filename, heatmap)

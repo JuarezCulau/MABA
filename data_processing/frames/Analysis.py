@@ -859,7 +859,7 @@ def RunSess(NoMoreFrames, codec, out):
             r = r + 1
             r2 = r2 + 1
 
-        #if there is no more frames, then it will clear the RawImages one last time and call the next function "WriteFile"
+        # if there is no more frames, then it will clear the RawImages one last time and call the next function "WriteFile"
         if NoMoreFrames:
             #Check if it should generate a ZcoreMap
             if Config.Zscore:
@@ -867,6 +867,8 @@ def RunSess(NoMoreFrames, codec, out):
 
             #Check if it should generate a heatmap
             if Config.Heatmap:
+                Heatmap.CenterBodyx_copy.extend(Config.CenterBodyx)
+                Heatmap.CenterBodyy_copy.extend(Config.CenterBodyy)
                 Heatmap.generate_heatmap()
 
             ClearArrays()
@@ -875,7 +877,13 @@ def RunSess(NoMoreFrames, codec, out):
 
             Write.writeFile()
 
-        #If there is more frames, then it will clear the RawImages and go back into the extractframes loop until there is no more frames.
+        # If there is more frames, then it will clear the RawImages and go back into the extractframes loop until there is no more frames.
         else:
+
+            # Make a copy of the center coordinates before clearing it
+            if Config.Heatmap:
+                Heatmap.CenterBodyx_copy.extend(Config.CenterBodyx)
+                Heatmap.CenterBodyy_copy.extend(Config.CenterBodyy)
+
             ClearArrays()
             print('clearing array extract frames call')
