@@ -231,7 +231,7 @@ IT_Center = 0
 
 # First the remaining variables will be set, using the acquired values by user input
 def setglobalvariables(values):
-    global modelpath, videopath, projectfolder, sample, cap, framerate, w, h, resolution, image_nl, img, videopath, video_name, resized_image, max_frames, resize_ratio
+    global modelpath, videopath, projectfolder, sample, cap, framerate, w, h, resolution, image_nl, img, videopath, video_name, resized_image, max_frames, resize_ratio, gpu_memory_gb, resized_image
 
     #Locations
     modelpath = values['-ModelPB-']
@@ -259,24 +259,32 @@ def setglobalvariables(values):
     video_name = values['-VideoFile-']
     print('Variables set!')
 
-    # ----
-    # Detect screen width and calculate resize ratio for ROI coordinates extraction on screen
-    window_width = get_screen_width()  # Get screen width
-    resize_ratio = window_width / w
+    # A few variables are going to be set only in multiselection file, in case of multiple videos being analyzed at once,
+    # But I am still going to retrieve from this file
+    max_frames = 0
+    resized_image = image_nl
+    resize_ratio = 0
 
-    # Resize image to fit within the detected window width
-    resized_image = cv2.resize(image_nl, (int(w * resize_ratio), int(h * resize_ratio)))
+    if SingleVideo:
 
-    # ----
-    # Find the max number of frames per loop
+        # ----
+        # Detect screen width and calculate resize ratio for ROI coordinates extraction on screen
+        window_width = get_screen_width()  # Get screen width
+        resize_ratio = window_width / w
 
-    # Convert GPU memory to bytes
-    gpu_memory_bytes = gpu_memory_gb * 1024 * 1024 * 1024
+        # Resize image to fit within the detected window width
+        resized_image = cv2.resize(image_nl, (int(w * resize_ratio), int(h * resize_ratio)))
 
-    bytes_per_pixel = 0.4568 # Average use of memory from the model
+        # ----
+        # Find the max number of frames per loop
 
-    memory_usage_per_frame = w * h * bytes_per_pixel
+        # Convert GPU memory to bytes
+        gpu_memory_bytes = gpu_memory_gb * 1024 * 1024 * 1024
 
-    max_frames = int(gpu_memory_bytes / memory_usage_per_frame)
+        bytes_per_pixel = 0.4568 # Average use of memory from the model
+
+        memory_usage_per_frame = w * h * bytes_per_pixel
+
+        max_frames = int(gpu_memory_bytes / memory_usage_per_frame)
 
     Model.loadModel()

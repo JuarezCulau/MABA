@@ -48,6 +48,7 @@ def SelectZones():
 
 
     # Zones field
+    #Zone = cv2.selectROIs("Select Zones with mouse and then press 'Enter', 'Esc' to finish selection", Config.resized_image, False)
     Zone = cv2.selectROIs("Select Zones with mouse and then press 'Enter', 'Esc' to finish selection", Config.resized_image, False)
 
     r = 0
