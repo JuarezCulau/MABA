@@ -23,15 +23,13 @@ under the License.
 import numpy as np
 import tensorflow as tf
 import cv2
-from data_processing.frames import Config
-from data_processing.frames import Frames
-from coordinates import EPM
-from coordinates import Zones
-from coordinates import NOR
-from coordinates import Locomotion
-from data_load import Write
-from data_load import Model
-from data_processing import Freezing
+from data_processing.frames import Config, Frames
+from coordinates import EPM, Zones, NOR, Locomotion
+from data_load import Write, Model
+from data_processing import Freezing, Heatmap
+
+# Total time
+r3 = 0
 
 def ClearArrays():
     Config.RawImages.clear()
@@ -88,7 +86,7 @@ def selectPointEPM(TrackedPointX, TrackedPointY):
 
 # This is the crucial step where all the acquired values from previous steps are compiled for further analysis.
 def RunSess(NoMoreFrames, codec, out):
-    global r2
+    global r2, r3
     r2 = Config.r2
     #The model is already loaded, so I only start the session here
     print('Starting Sess')
@@ -818,17 +816,33 @@ def RunSess(NoMoreFrames, codec, out):
             if not Config.CropRon:
                 out.write(image)
 
-            r = r + 1
-            r2 = r2 + 1
+            r += 1
+            r2 += 1
+            r3 += 1
 
         # If there are no more frames, the code will clear the RawImages variable one last time and call the next function, "WriteFile".
         if NoMoreFrames:
+            #Check if it should generate a heatmap
+            if Config.Heatmap:
+                Heatmap.CenterBodyx_copy.extend(Config.CenterBodyx)
+                Heatmap.CenterBodyy_copy.extend(Config.CenterBodyy)
+                Heatmap.generate_heatmap()
+
             ClearArrays()
             out.release
             print('Video Created')
             Write.writeFile()
 
+            # Reset total number of frames to zero
+            r3 = 0
+
         # If there are more frames, the code will clear the RawImages variable and return to the extractframes loop until there are no more frames remaining.
         else:
+
+            # Make a copy of the center coordinates before clearing it
+            if Config.Heatmap:
+                Heatmap.CenterBodyx_copy.extend(Config.CenterBodyx)
+                Heatmap.CenterBodyy_copy.extend(Config.CenterBodyy)
+
             ClearArrays()
             print('clearing array extract frames call')

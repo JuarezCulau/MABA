@@ -32,7 +32,6 @@ from coordinates import Locomotion
 from coordinates import EPM
 from coordinates import CropImage
 
-
 #Load frozen tensorflow model selected by user
 # Note: It is highly recommended to train your own model using DeepLabCut and ResNet50 for optimal performance.
 # However, if your model was not trained with DeepLabCut, certain modifications in this section might be necessary.
@@ -67,6 +66,7 @@ def loadModel():
 
     #Most of the next functions are optional, selected by the user before pressing "Run"
     if Config.SingleVideo:
+
         if Config.CropImage:
             CropImage.CropForAnalysis()
 
@@ -82,12 +82,15 @@ def loadModel():
         if Config.NovelObject:
             NOR.ObjectSelection()
 
-        if Config.CreateLocomotionGraph:
+        if Config.Interaction:
+            NOR.SpecificObjectSelection()
+
+        # Using the same function to generate the ROI coordinates for Locomotion Graph and Heatmap
+        if Config.CreateLocomotionGraph or Config.Heatmap:
             Locomotion.CropForLocomotionGraph()
 
-        if not Config.TrackZones and not Config.NovelObject and not Config.DualZone and not Config.CreateLocomotionGraph:
-            print('load model extract frames call')
-            Frames.extractframes()
+        print('load model extract frames call')
+        Frames.extractframes()
 
     else:
         MultiSelection.MultiExtraction()

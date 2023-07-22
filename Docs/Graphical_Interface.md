@@ -25,3 +25,7 @@ To distinguish between different analysis samples, it's important to provide a n
 # Step 5: Configuring the Confidence Threshold
 
 The confidence threshold determines the reliability of the analyzed data. This value is based on how well you expect the model to track the videos being analyzed. The higher the value, the more reliable the analyzed data. It is recommended to use a minimum threshold of 0.8, and the optimal value is typically 0.95.
+
+# Step 6: Specify the Graphics Card Memory (GB)
+
+This step allows us to assess several factors concerning the execution of the CUDA model on your graphics card, enhancing processing time flexibility. 
