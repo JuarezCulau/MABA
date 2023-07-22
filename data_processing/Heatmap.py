@@ -39,7 +39,7 @@ def generate_heatmap():
     std_y = np.std(CenterBodyy_copy)
 
     # Create ROI image
-    RoiImg = Config.img[Locomotion.ER_QY1: Locomotion.ER_QY2, Locomotion.ER_QX1: Locomotion.ER_QX2]
+    RoiImg = Config.image_nl[Locomotion.ER_QY1: Locomotion.ER_QY2, Locomotion.ER_QX1: Locomotion.ER_QX2]
 
     # Normalize z-score values
     z_x = (CenterBodyx_copy - mean_x) / std_x
@@ -60,11 +60,11 @@ def generate_heatmap():
         heatmap_y[y_coord, x_coord] += z_y_val
 
     # Apply colormap to heatmaps
-    heatmap_x = plt.cm.jet(heatmap_x)
-    heatmap_y = plt.cm.jet(heatmap_y)
+    heatmap_x_colored = plt.cm.jet(heatmap_x)
+    heatmap_y_colored = plt.cm.jet(heatmap_y)
 
     # Combine x and y heatmaps
-    heatmap = 0.5 * heatmap_x + 0.5 * heatmap_y
+    heatmap = 0.5 * heatmap_x_colored + 0.5 * heatmap_y_colored
 
     # Display the heatmap
     plt.imshow(heatmap)
@@ -72,9 +72,17 @@ def generate_heatmap():
     #plt.show()
 
     # Save the heatmap using plt.savefig()
-    filename = str(Config.projectfolder) + '/heatmap_' + str(Config.sample) + '.jpg'
+    filename = str(Config.projectfolder) + '/heatmap_' + str(Config.sample) + str(Config.video_name) + '.jpg'
     plt.savefig(filename)
 
     # Save the heatmap using plt.imsave()
-    full_size_filename = str(Config.projectfolder) + 'full_size_heatmap_' + str(Config.sample) + '.jpg'
+    full_size_filename = str(Config.projectfolder) + 'full_size_heatmap_' + str(Config.sample) + str(Config.video_name) + '.jpg'
     plt.imsave(full_size_filename, heatmap)
+
+    # Clear coordinates
+    CenterBodyx_copy.clear()
+    CenterBodyy_copy.clear()
+
+    # Reset heatmap arrays for each call
+    #heatmap_x = None
+    #heatmap_y = None

@@ -30,7 +30,7 @@ from sys import getsizeof
 from coordinates import Zones, NOR, Locomotion, CropImage, EPM
 from data_processing.frames import Config, Frames, Analysis
 
-module_names = ['data_processing/Locomotion', 'data_processing/Config', 'coordinates/Zones', 'coordinates/NOR', 'coordinates/CropImage', 'coordinates/EPM']
+module_names = ['coordinates.Locomotion', 'data_processing.frames.Config', 'coordinates.Zones', 'coordinates.NOR', 'coordinates.CropImage', 'coordinates.EPM']
 
 # Function to get screen width using ctypes
 def get_screen_width():
