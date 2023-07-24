@@ -16,3 +16,5 @@ The analysis will begin, analyzing the behavior of the mice in the selected area
 Wait until the analysis is completed. At the end, the results will be available, providing insights into the behavior observed in the Elevated Plus Maze.
 
 By following these steps, you can effectively utilize the MABA tool to analyze the behavior of mice in the Elevated Plus Maze. If you have any further questions or need assistance, please feel free to ask.
+
+# At present, Multi-Video analysis is not supported.

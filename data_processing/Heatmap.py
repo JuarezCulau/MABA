@@ -23,9 +23,7 @@ under the License.
 
 import cv2
 from coordinates import Locomotion
-from data_processing.frames import Frames
-from data_processing.frames import Config
-from data_processing.frames import Analysis
+from data_processing.frames import Frames, Config, Analysis
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -34,19 +32,18 @@ CenterBodyx_copy = []
 CenterBodyy_copy = []
 
 def generate_heatmap():
-    print("460923423446356766")
     # Calculate mean and standard deviation
-    mean_x = np.mean(Config.CenterBodyx)
-    mean_y = np.mean(Config.CenterBodyy)
-    std_x = np.std(Config.CenterBodyx)
-    std_y = np.std(Config.CenterBodyy)
+    mean_x = np.mean(CenterBodyx_copy)
+    mean_y = np.mean(CenterBodyy_copy)
+    std_x = np.std(CenterBodyx_copy)
+    std_y = np.std(CenterBodyy_copy)
 
     # Create ROI image
-    RoiImg = Config.img[Locomotion.ER_QY1: Locomotion.ER_QY2, Locomotion.ER_QX1: Locomotion.ER_QX2]
+    RoiImg = Config.image_nl[Locomotion.ER_QY1: Locomotion.ER_QY2, Locomotion.ER_QX1: Locomotion.ER_QX2]
 
     # Normalize z-score values
-    z_x = (Config.CenterBodyx - mean_x) / std_x
-    z_y = (Config.CenterBodyy - mean_y) / std_y
+    z_x = (CenterBodyx_copy - mean_x) / std_x
+    z_y = (CenterBodyy_copy - mean_y) / std_y
 
     # Determine the size of the heatmap based on the ROI image size
     map_height, map_width = RoiImg.shape[:2]
@@ -56,18 +53,18 @@ def generate_heatmap():
     heatmap_y = np.zeros((map_height, map_width))
 
     # Accumulate values in the heatmap
-    for x, y, z_x_val, z_y_val in zip(Config.CenterBodyx, Config.CenterBodyy, z_x, z_y):
+    for x, y, z_x_val, z_y_val in zip(CenterBodyx_copy, CenterBodyy_copy, z_x, z_y):
         x_coord = int(x - Locomotion.ER_QX1)
         y_coord = int(y - Locomotion.ER_QY1)
         heatmap_x[y_coord, x_coord] += z_x_val
         heatmap_y[y_coord, x_coord] += z_y_val
 
     # Apply colormap to heatmaps
-    heatmap_x = plt.cm.jet(heatmap_x)
-    heatmap_y = plt.cm.jet(heatmap_y)
+    heatmap_x_colored = plt.cm.jet(heatmap_x)
+    heatmap_y_colored = plt.cm.jet(heatmap_y)
 
     # Combine x and y heatmaps
-    heatmap = 0.5 * heatmap_x + 0.5 * heatmap_y
+    heatmap = 0.5 * heatmap_x_colored + 0.5 * heatmap_y_colored
 
     # Display the heatmap
     plt.imshow(heatmap)
@@ -75,9 +72,17 @@ def generate_heatmap():
     #plt.show()
 
     # Save the heatmap using plt.savefig()
-    filename = str(Config.projectfolder) + '/heatmap_' + str(Config.sample) + '.jpg'
+    filename = str(Config.projectfolder) + '/heatmap_' + str(Config.sample) + str(Config.video_name) + '.jpg'
     plt.savefig(filename)
 
     # Save the heatmap using plt.imsave()
-    full_size_filename = str(Config.projectfolder) + 'full_size_heatmap_' + str(Config.sample) + '.jpg'
+    full_size_filename = str(Config.projectfolder) + 'full_size_heatmap_' + str(Config.sample) + str(Config.video_name) + '.jpg'
     plt.imsave(full_size_filename, heatmap)
+
+    # Clear coordinates
+    CenterBodyx_copy.clear()
+    CenterBodyy_copy.clear()
+
+    # Reset heatmap arrays for each call
+    #heatmap_x = None
+    #heatmap_y = None

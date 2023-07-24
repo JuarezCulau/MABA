@@ -56,6 +56,7 @@ def ExtractCoordinatestxt(video_name):
                     variables[variable_name] = value
 
         # Get the specific variables and update the coordinates with it
+        Config.max_frames = convert_to_int(variables.get("max_frames"))
 
         #Zones ROI Coordinates
         Zones.nZones = convert_to_int(variables.get("nZones"))
@@ -259,8 +260,8 @@ def extractframes():
 
                 # ----
                 # Find the max number of frames per loop
-                memory_usage_per_frame = w * h * Config.bytes_per_pixel
-                Config.max_frames = int(Config.gpu_memory_bytes / memory_usage_per_frame)
+                #memory_usage_per_frame = w * h * Config.bytes_per_pixel
+                #Config.max_frames = int(Config.gpu_memory_bytes / memory_usage_per_frame)
 
                 ExtractCoordinatestxt(video_name)
 
@@ -308,7 +309,6 @@ def extractframes():
                             Analysis.RunSess(Config.NoMoreFrames, codec, out)
 
                     else:
-
                         if (getsizeof(Config.RawImages) <= Config.max_frames):
                             print('appending')
                             Config.RawImages.append(image_np)

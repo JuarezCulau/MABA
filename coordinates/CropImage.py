@@ -27,6 +27,14 @@ def CropForAnalysis():
     global CI_QX1, CI_QX2, CI_QY1, CI_QY2, y_start, y_end, x_start, x_end
     CropROI = cv2.selectROI("(Crop Image For Analysis) Select the Entire Are of Your Experiment 'Enter'", Config.resized_image, False)
 
+    # Adjust the ROI coordinates based on the resize ratio for the original image
+    CropROI = list(CropROI)  # Convert the ROI tuple to a list
+
+    CropROI[0] = int(CropROI[0] / Config.resize_ratio)
+    CropROI[1] = int(CropROI[1] / Config.resize_ratio)
+    CropROI[2] = int(CropROI[2] / Config.resize_ratio)
+    CropROI[3] = int(CropROI[3] / Config.resize_ratio)
+
     CI_X2 = (CropROI[0]) + (CropROI[2])
     CI_Y2 = (CropROI[1]) + (CropROI[3])
 

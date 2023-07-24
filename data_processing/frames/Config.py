@@ -155,8 +155,6 @@ SingleVideo = False
 Freeze = False
 CropImage = False
 EPM = False
-Cage = False
-Zscore = False
 Heatmap = False
 
 def resetvalues():
@@ -231,31 +229,9 @@ IT_OpenArm = 0
 IT_ClosedArm = 0
 IT_Center = 0
 
-#Cage Global Variables
-global Cage_Rectangles
-Cage_Rectangles = []
-#Entry (N)
-N_Obj1 = 0
-N_Obj2 = 0
-N_Obj3 = 0
-#Time (T)
-T_Obj1 = 0
-T_Obj2 = 0
-T_Obj3 = 0
-#State (S)
-S_Obj1 = 0
-S_Obj2 = 0
-S_Obj3 = 0
-# Action time between different objects (ADT)
-Cage_ADT = 0
-# Action Time Between the same object (AST)
-AST_Obj1 = 0
-AST_Obj2 = 0
-AST_Obj3 = 0
-
-#First the remaining variables will be set, using the acquired values by user input
+# First the remaining variables will be set, using the acquired values by user input
 def setglobalvariables(values):
-    global modelpath, videopath, projectfolder, sample, cap, framerate, w, h, resolution, image_nl, img, videopath, video_name, resized_image, max_frames
+    global modelpath, videopath, projectfolder, sample, cap, framerate, w, h, resolution, image_nl, img, videopath, video_name, resized_image, max_frames, resize_ratio, gpu_memory_gb, resized_image
 
     #Locations
     modelpath = values['-ModelPB-']
@@ -271,7 +247,7 @@ def setglobalvariables(values):
         return user32.GetSystemMetrics(0)
 
     # ----
-    #Data from video for selection
+    # Data from video for selection
     cap = cv2.VideoCapture(videopath)
     framerate = round(cap.get(5), 2)
     w = int(cap.get(3))
@@ -283,24 +259,32 @@ def setglobalvariables(values):
     video_name = values['-VideoFile-']
     print('Variables set!')
 
-    # ----
-    # Detect screen width and calculate resize ratio for ROI coordinates extraction on screen
-    window_width = get_screen_width()  # Get screen width
-    resize_ratio = window_width / w
+    # A few variables are going to be set only in multiselection file, in case of multiple videos being analyzed at once,
+    # But I am still going to retrieve from this file
+    max_frames = 0
+    resized_image = image_nl
+    resize_ratio = 0
 
-    # Resize image to fit within the detected window width
-    resized_image = cv2.resize(image_nl, (int(w * resize_ratio), int(h * resize_ratio)))
+    if SingleVideo:
 
-    # ----
-    # Find the max number of frames per loop
+        # ----
+        # Detect screen width and calculate resize ratio for ROI coordinates extraction on screen
+        window_width = get_screen_width()  # Get screen width
+        resize_ratio = window_width / w
 
-    # Convert GPU memory to bytes
-    gpu_memory_bytes = gpu_memory_gb * 1024 * 1024 * 1024
+        # Resize image to fit within the detected window width
+        resized_image = cv2.resize(image_nl, (int(w * resize_ratio), int(h * resize_ratio)))
 
-    bytes_per_pixel = 0.4568 #Average use of memory from the model
+        # ----
+        # Find the max number of frames per loop
 
-    memory_usage_per_frame = w * h * bytes_per_pixel
+        # Convert GPU memory to bytes
+        gpu_memory_bytes = gpu_memory_gb * 1024 * 1024 * 1024
 
-    max_frames = int(gpu_memory_bytes / memory_usage_per_frame)
+        bytes_per_pixel = 0.4568 # Average use of memory from the model
+
+        memory_usage_per_frame = w * h * bytes_per_pixel
+
+        max_frames = int(gpu_memory_bytes / memory_usage_per_frame)
 
     Model.loadModel()

@@ -34,6 +34,17 @@ from data_processing.frames import Config
 # If there are more objects in your experiment, you can expand this section accordingly.
 def ObjectSelection():
     RON = cv2.selectROIs("select the area around the objects, press 'Enter' after selecting the first one, 'Esc' After selecting the second", Config.resized_image, False)
+
+    r = 0
+    # Adjust the ROI coordinates based on the resize ratio for the original image
+    for roi_resized in RON:
+        ((RON[r])[0]) = int(roi_resized[0] / Config.resize_ratio)
+        ((RON[r])[1]) = int(roi_resized[1] / Config.resize_ratio)
+        ((RON[r])[2]) = int(roi_resized[2] / Config.resize_ratio)
+        ((RON[r])[3]) = int(roi_resized[3] / Config.resize_ratio)
+
+        r = r + 1
+
     global R1_X2, R1_Y2, R1_1, R1_2, R1_3, R1_4, R1_QX1, R1_QX2, R1_QY1, R1_QY2
     global R2_X2, R2_Y2, R2_1, R2_2, R2_3, R2_4, R2_QX1, R2_QX2, R2_QY1, R2_QY2
     #First Object
@@ -57,12 +68,12 @@ def ObjectSelection():
     #Example 1
     #Example function mentioned above | This is going to create a image with the four points of the zone around the object
     # First click coordinate
-    #cv2.circle(resized_image, (R1_1), radius=20, color=(0, 0, 255), thickness=10)
+    #cv2.circle(Config.resized_image, (R1_1), radius=20, color=(0, 0, 255), thickness=10)
     # release click coordinate
-    #cv2.circle(resized_image, (R1_2), radius=20, color=(0, 0, 255), thickness=10)
-    #cv2.circle(resized_image, (R1_3), radius=20, color=(0, 0, 255), thickness=10)
-    #cv2.circle(resized_image, (R1_4), radius=20, color=(0, 0, 255), thickness=10)
-    #cv2.imwrite('Object 1.jpg', resized_image)
+    #cv2.circle(Config.resized_image, (R1_2), radius=20, color=(0, 0, 255), thickness=10)
+    #cv2.circle(Config.resized_image, (R1_3), radius=20, color=(0, 0, 255), thickness=10)
+    #cv2.circle(Config.resized_image, (R1_4), radius=20, color=(0, 0, 255), thickness=10)
+    #cv2.imwrite('Object 1.jpg', Config.resized_image)
 
     #Second Object
     R2_X2 = ((RON[1])[0]) + ((RON[1])[2])
@@ -84,6 +95,17 @@ def ObjectSelection():
 # Usage: Before using this function, it is recommended to test the model on a video or train a new model (pb model) to ensure accurate nose tracking. Adjust the threshold value accordingly.
 def SpecificObjectSelection():
     OBJ = cv2.selectROIs("Select the Objects, press 'Enter' after selecting the first one, 'Esc' After selecting the second", Config.resized_image, False)
+
+    r = 0
+    # Adjust the ROI coordinates based on the resize ratio for the original image
+    for roi_resized in OBJ:
+        ((OBJ[r])[0]) = int(roi_resized[0] / Config.resize_ratio)
+        ((OBJ[r])[1]) = int(roi_resized[1] / Config.resize_ratio)
+        ((OBJ[r])[2]) = int(roi_resized[2] / Config.resize_ratio)
+        ((OBJ[r])[3]) = int(roi_resized[3] / Config.resize_ratio)
+
+        r = r + 1
+
     global OBJ1_X2, OBJ1_Y2, OBJ1_1, OBJ1_2, OBJ1_3, OBJ1_4, OBJ1_QX1, OBJ1_QX2, OBJ1_QY1, OBJ1_QY2
     global OBJ2_X2, OBJ2_Y2, OBJ2_1, OBJ2_2, OBJ2_3, OBJ2_4, OBJ2_QX1, OBJ2_QX2, OBJ2_QY1, OBJ2_QY2
     #First Object

@@ -20,23 +20,22 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 """
-
+import ctypes
 import os
 import sys
 import types
 import cv2
-from data_processing.frames import Config
-from data_processing.frames import Frames
 import GUI
 from sys import getsizeof
-from data_processing.frames import Analysis
-from coordinates import Zones
-from coordinates import NOR
-from coordinates import Locomotion
-from coordinates import CropImage
-from coordinates import EPM
+from coordinates import Zones, NOR, Locomotion, CropImage, EPM
+from data_processing.frames import Config, Frames, Analysis
 
-module_names = ['Locomotion', 'Config', 'Zones', 'NOR', 'CropImage', 'EPM']
+module_names = ['coordinates.Locomotion', 'data_processing.frames.Config', 'coordinates.Zones', 'coordinates.NOR', 'coordinates.CropImage', 'coordinates.EPM']
+
+# Function to get screen width using ctypes
+def get_screen_width():
+    user32 = ctypes.windll.user32
+    return user32.GetSystemMetrics(0)
 
 # Reset values from one selection to the other if needed
 def reset_values():
@@ -87,6 +86,26 @@ def MultiExtraction():
             Config.resolution = (w, h)
 
             ret, Config.image_nl = Config.cap.read()
+
+            # ----
+            # Detect screen width and calculate resize ratio for ROI coordinates extraction on screen
+            window_width = get_screen_width()  # Get screen width
+            Config.resize_ratio = window_width / w
+
+            # Resize image to fit within the detected window width
+            Config.resized_image = cv2.resize(Config.image_nl, (int(w * Config.resize_ratio), int(h * Config.resize_ratio)))
+
+            # ----
+            # Find the max number of frames per loop
+
+            # Convert GPU memory to bytes
+            gpu_memory_bytes = Config.gpu_memory_gb * 1024 * 1024 * 1024
+
+            bytes_per_pixel = 0.4568  # Average use of memory from the model
+
+            memory_usage_per_frame = w * h * bytes_per_pixel
+
+            Config.max_frames = int(gpu_memory_bytes / memory_usage_per_frame)
 
             # Create logic to extract the coordinates of each video first
             if Config.CropImage:
