@@ -34,6 +34,8 @@ from data_load import Write
 from data_load import Model
 from data_processing import Freezing, ZScoreMap, Heatmap
 
+# Total time
+r3 = 0
 
 def ClearArrays():
     Config.RawImages.clear()
@@ -90,7 +92,7 @@ def selectPointEPM(TrackedPointX, TrackedPointY):
 
 # This is the crucial step where all the acquired values from previous steps are compiled for further analysis.
 def RunSess(NoMoreFrames, codec, out):
-    global r2
+    global r2, r3
     r2 = Config.r2
     #The model is already loaded, so I only start the session here
     print('Starting Sess')
@@ -856,8 +858,9 @@ def RunSess(NoMoreFrames, codec, out):
             if not Config.CropRon:
                 out.write(image)
 
-            r = r + 1
-            r2 = r2 + 1
+            r += 1
+            r2 += 1
+            r3 += 1
 
         # if there is no more frames, then it will clear the RawImages one last time and call the next function "WriteFile"
         if NoMoreFrames:
@@ -876,6 +879,9 @@ def RunSess(NoMoreFrames, codec, out):
             print('Video Created')
 
             Write.writeFile()
+
+            # Reset total number of frames to zero
+            r3 = 0
 
         # If there is more frames, then it will clear the RawImages and go back into the extractframes loop until there is no more frames.
         else:
