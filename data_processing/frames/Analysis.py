@@ -772,27 +772,36 @@ def RunSess(NoMoreFrames, codec, out):
 
             if Config.Cage:
 
-                #Set Tracked Points (X,Y)
+                # Initialize the detected flag as False
+                detected = False
+
+                # Set Tracked Points (X,Y) if Center Body is detected
                 if CenterBody_T > Config.confiability_threshold:
+                    detected = True
                     TrackedPointX = FrameCenterBodyx
                     TrackedPointY = FrameCenterBodyy
 
-                else:
+                # Set Tracked Points (X,Y) if Nose is detected
+                elif Nose_T > Config.confiability_threshold:
+                    detected = True
                     TrackedPointX = FrameNosex
                     TrackedPointY = FrameNosey
 
-                #Set Tracked Point Range
+                else:
+                    detected = False
+
+                # Set Tracked Point Range
                 obj1_tracked_range = cv2.pointPolygonTest(Cage.polygon_obj1_umat, (TrackedPointX, TrackedPointY), False) > 0
                 obj2_tracked_range = cv2.pointPolygonTest(Cage.polygon_obj2_umat, (TrackedPointX, TrackedPointY), False) > 0
                 obj3_tracked_range = cv2.pointPolygonTest(Cage.polygon_obj3_umat, (TrackedPointX, TrackedPointY), False) > 0
 
-                #If only the nose is close enough, it's still going to be used
+                # If only the nose is close enough, it's still going to be used
                 obj1_tracked_range_nose = cv2.pointPolygonTest(Cage.polygon_obj1_umat, (FrameNosex, FrameNosey), False) > 0
                 obj2_tracked_range_nose = cv2.pointPolygonTest(Cage.polygon_obj2_umat, (FrameNosex, FrameNosey), False) > 0
                 obj3_tracked_range_nose = cv2.pointPolygonTest(Cage.polygon_obj3_umat, (FrameNosex, FrameNosey), False) > 0
 
-                # Check if the point is inside the rectangle
-                if obj1_tracked_range or obj1_tracked_range_nose:
+                # Check if the point is inside the rectangle or if it's not detected, in which case, it must be inside the first object
+                if obj1_tracked_range or obj1_tracked_range_nose or not detected:
 
                     if Config.S_Obj1:
                         cv2.putText(image, 'Cage Object 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
