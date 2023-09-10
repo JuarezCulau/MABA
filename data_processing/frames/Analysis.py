@@ -32,7 +32,9 @@ from coordinates import Locomotion
 from coordinates import Cage
 from data_load import Write
 from data_load import Model
-from data_processing import Freezing, ZScoreMap, Heatmap
+from data_processing import Freezing, ZScoreMap, Heatmap, Distance
+from data_processing import Distance
+from Distance import DistanceTracker
 
 # Total time
 r3 = 0
@@ -862,6 +864,17 @@ def RunSess(NoMoreFrames, codec, out):
                         Config.S_Obj1 = False
 
                         cv2.putText(image, 'Cage Object 3', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+
+            # Calculate the euclidean difference between the current frame and the last one in order to predict total distance
+            if Config.Distance:
+                # Create an instance of the MouseTracker class
+                distance = DistanceTracker()
+
+                # Calculate and get the Euclidean difference
+                #euclidean_difference = distance.calculate_euclidean_difference(FrameCenterBodyx, FrameCenterBodyy)
+
+                cv2.putText(image, str(distance.calculate_euclidean_difference(FrameCenterBodyx, FrameCenterBodyy)), (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+
 
             #if CropRon was not selected, then it will write the video at each loop
             if not Config.CropRon:

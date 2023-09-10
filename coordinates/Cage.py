@@ -82,7 +82,23 @@ def SetCoordinates(image, polygons):
     obj_2 = []
     obj_3 = []
 
+    resized_polygons = []
+
+    # Adjust the coordinates from the resized image into the original image
     for polygon in polygons:
+        adjusted_polygon = []
+
+        for point in polygon:
+            x, y = point
+            adjusted_x = int(x / Config.resize_ratio)
+            adjusted_y = int(y / Config.resize_ratio)
+            adjusted_point = (adjusted_x, adjusted_y)
+            adjusted_polygon.append(adjusted_point)
+
+        resized_polygons.append(adjusted_polygon)
+
+
+    for polygon in resized_polygons:
         # Connect the points with lines
         for i in range(len(polygon)):
             start_point = polygon[i]
@@ -90,11 +106,11 @@ def SetCoordinates(image, polygons):
             cv2.line(image, start_point, end_point, (0, 255, 0), 2)
 
         # Store the polygon coordinates based on their order
-        if polygon == polygons[0]:
+        if polygon == resized_polygons[0]:
             obj_1 = polygon
-        elif polygon == polygons[1]:
+        elif polygon == resized_polygons[1]:
             obj_2 = polygon
-        elif polygon == polygons[2]:
+        elif polygon == resized_polygons[2]:
             obj_3 = polygon
 
 

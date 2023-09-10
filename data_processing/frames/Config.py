@@ -158,6 +158,7 @@ EPM = False
 Heatmap = False
 Cage = False
 Zscore = False
+Distance = True
 
 def resetvalues():
     r = 0
