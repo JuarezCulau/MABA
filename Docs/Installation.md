@@ -7,9 +7,10 @@ To quickly have python running on your machine, download and install [Anaconda](
 
 # 2: If you wish to use a GPU (Recommended), you need to also have CUDA and cuDNN installed.
 Please note that CUDA systems only with NVIDIA GPUs, please check the support for your GPU.
+It needs to be compatible with TensorFlow 2.10.0. For development, CUDA 11.7 is currently being used.
 
 # 3: Create a new environment
-First, open Anaconda. Then, use the following command. 
+First, open Anaconda Terminal. Then, use the following command. 
 ```
 conda create --name MABA
 ```
