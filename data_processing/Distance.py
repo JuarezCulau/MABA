@@ -27,3 +27,20 @@ class DistanceTracker:
         return euclidean_distance
 
 
+# Example usage:
+if __name__ == "__main__":
+    tracker = DistanceTracker()
+
+    # Simulate processing video frames
+    for frame_number in range(1, 11):
+        # Replace these coordinates with the actual coordinates of the mouse point in the frame
+        current_mouse_point = (frame_number * 10, frame_number * 10)
+
+        # Calculate and get the Euclidean difference
+        euclidean_difference = tracker.calculate_euclidean_difference(current_mouse_point)
+
+        # Print the results for each frame
+        print(
+            f"Frame {frame_number}: Euclidean Difference = {euclidean_difference}, Total Movement = {tracker.total_movement}")
+
+

@@ -32,12 +32,15 @@ from coordinates import Locomotion
 from coordinates import Cage
 from data_load import Write
 from data_load import Model
-from data_processing import Freezing, ZScoreMap, Heatmap, Distance
-from data_processing import Distance
-from Distance import DistanceTracker
+from data_processing import Freezing, ZScoreMap, Heatmap
+from data_processing.frames.EuclideanDistance import DistanceTracker
 
 # Total time
 r3 = 0
+
+
+# Create an instance of the MouseTracker class
+distance = DistanceTracker()
 
 def ClearArrays():
     Config.RawImages.clear()
@@ -777,6 +780,11 @@ def RunSess(NoMoreFrames, codec, out):
                 # Initialize the detected flag as False
                 detected = False
 
+                # Start the local variable outside the first check to assign a value in case the first frame does not detect those two points
+                # It still needs to have detected set to true in order to be inside the other zones, so it serves this purpose only
+                TrackedPointX = FrameCenterBodyx
+                TrackedPointY = FrameCenterBodyy
+
                 # Set Tracked Points (X,Y) if Center Body is detected
                 if CenterBody_T > Config.confiability_threshold:
                     detected = True
@@ -789,8 +797,20 @@ def RunSess(NoMoreFrames, codec, out):
                     TrackedPointX = FrameNosex
                     TrackedPointY = FrameNosey
 
+                # Check if can detect any point before displaying as not detected (End of the tail not included)
                 else:
-                    detected = False
+
+                    if L_Ear_T > Config.confiability_threshold:
+                        detected = True
+
+                    if R_Ear_T > Config.confiability_threshold:
+                        detected = True
+
+                    if Tail1_T > Config.confiability_threshold:
+                        detected = True
+
+                    else:
+                        detected = False
 
                 # Set Tracked Point Range
                 obj1_tracked_range = cv2.pointPolygonTest(Cage.polygon_obj1_umat, (TrackedPointX, TrackedPointY), False) > 0
@@ -806,7 +826,7 @@ def RunSess(NoMoreFrames, codec, out):
                 if obj1_tracked_range or obj1_tracked_range_nose or not detected:
 
                     if Config.S_Obj1:
-                        cv2.putText(image, 'Cage Object 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        cv2.putText(image, 'Resting', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
                         # Add one frame to the total time in this zone
                         Config.T_Obj1 = Config.T_Obj1 + 1
@@ -821,13 +841,13 @@ def RunSess(NoMoreFrames, codec, out):
                         Config.S_Obj3 = False
                         Config.S_Obj1 = True
 
-                        cv2.putText(image, 'Cage Object 1', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        cv2.putText(image, 'Resting', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
                 # Check if the point is inside the rectangle
-                if obj2_tracked_range or obj2_tracked_range_nose:
+                if obj2_tracked_range or obj2_tracked_range_nose and detected:
 
                     if Config.S_Obj2:
-                        cv2.putText(image, 'Cage Object 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        cv2.putText(image, 'Interacting with Bowls', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
                         # Add one frame to the total time in this zone
                         Config.T_Obj2 = Config.T_Obj2 + 1
@@ -842,10 +862,10 @@ def RunSess(NoMoreFrames, codec, out):
                         Config.S_Obj3 = False
                         Config.S_Obj1 = False
 
-                        cv2.putText(image, 'Cage Object 2', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                        cv2.putText(image, 'Interacting with Bowls', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
                 # Check if the point is inside the rectangle
-                if obj3_tracked_range or obj3_tracked_range_nose:
+                if obj3_tracked_range or obj3_tracked_range_nose and detected:
 
                     if Config.S_Obj3:
                         cv2.putText(image, 'Cage Object 3', (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
@@ -868,12 +888,14 @@ def RunSess(NoMoreFrames, codec, out):
             # Calculate the euclidean difference between the current frame and the last one in order to predict total distance
             if Config.Distance:
                 # Create an instance of the MouseTracker class
-                distance = DistanceTracker()
+                #distance = DistanceTracker()
+
+                current_point = (FrameCenterBodyx, FrameCenterBodyy)
 
                 # Calculate and get the Euclidean difference
                 #euclidean_difference = distance.calculate_euclidean_difference(FrameCenterBodyx, FrameCenterBodyy)
 
-                cv2.putText(image, str(distance.calculate_euclidean_difference(FrameCenterBodyx, FrameCenterBodyy)), (50, 300), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                cv2.putText(image, "Total Distance: " + str(distance.calculate_euclidean_difference(current_point)), (50, 200), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
 
 
             #if CropRon was not selected, then it will write the video at each loop
