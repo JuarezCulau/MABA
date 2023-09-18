@@ -23,7 +23,7 @@ under the License.
 import numpy as np
 import tensorflow as tf
 import cv2
-from data_processing.frames import Config
+from data_processing.frames import Config, BurstDetection
 from data_processing.frames import Frames
 from coordinates import EPM
 from coordinates import Zones
@@ -895,7 +895,12 @@ def RunSess(NoMoreFrames, codec, out):
                 # Calculate and get the Euclidean difference
                 #euclidean_difference = distance.calculate_euclidean_difference(FrameCenterBodyx, FrameCenterBodyy)
 
-                cv2.putText(image, "Total Distance: " + str(distance.calculate_euclidean_difference(current_point)), (50, 200), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+                total_distance = distance.calculate_euclidean_difference(current_point)
+
+                cv2.putText(image, "Total Distance: " + str(total_distance), (50, 200), Config.font, 1, (0, 255, 255), 2, cv2.LINE_4)
+
+                # Check for bursts (e.g., if the velocity increases by 10 units in the last 30 frames)
+                burst_detected = BurstDetection.detect_bursts(total_distance, r3, burst_threshold=10, frames_to_check=30)
 
 
             #if CropRon was not selected, then it will write the video at each loop
